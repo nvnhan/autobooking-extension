@@ -1,0 +1,36 @@
+<div class="extension-wrapper">
+    <h3>Theo dõi đặt vé</h3>
+    <div class="form">
+        <table class="follow-request">
+            <tbody>
+            <tr>
+                <td><label>Loại giá</label></td>
+                <td><input type="radio" name="typeCost" value="base" checked> Giá vé gốc
+                    <input type="radio" name="typeCost" value="total"> Giá vé đã kèm thuế phí
+                </td>
+            </tr>
+            <tr>
+                <td><label for="maxCost">Giá vé tối đa</label></td>
+                <td><input type="number" id="maxCost" placeholder="Giá vé tối đa"> VNĐ</td>
+            </tr>
+            <tr>
+                <td><label for="placeCd">Chuyến bay</label></td>
+                <td><input type="text" placeholder="Để trống để tìm tất cả" id="placeCd"> VD: VJ121</td>
+            </tr>
+            <tr>
+                <td><label for="placeCd">Thời gian refresh</label></td>
+                <td><input type="text" id="timeRefresh" placeholder="Tính theo giây"> VD: 5</td>
+            </tr>
+            <tr>
+                <td><label for="placeCd">Sau khi tìm thấy</label></td>
+                <td><input type="checkbox" id="autoBooking"> Tự động Đặt Chỗ</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-order">
+        <button class="btn-order" id="btnTriggerFollow"><strong id="btnTriggerFollowMsg"></strong></button>
+    </div>
+    <p>Trạng thái: <strong id="followStateMsg"></strong></p>
+</div>

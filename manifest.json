@@ -1,0 +1,42 @@
+{
+	"manifest_version": 2,
+	"name": "Booking Tool",
+	"version": "1.1.0",
+	"description": "Công cụ hỗ trợ theo dõi và đặt vé máy bay",
+	"browser_action": {
+		"default_popup": "login-popup.html"
+	},
+
+	"permissions": [
+		"http://*/*",
+        "https://*/*",
+        "activeTab",
+        "tabs",
+		"notifications",
+		"storage"
+	],
+
+	"icons": {
+		"32": "plane-logo.png",
+		"64": "plane-logo.png",
+		"128": "plane-logo.png"
+	},
+
+	"background": {
+		"persistent": true,
+		"page": "background.html"
+	},
+
+	"web_accessible_resources": [
+		"js/inject.js",
+		"follow-bar.html"
+	],
+	
+	"content_scripts": [
+		{
+			"js": ["js/jquery.js", "js/config.js", "js/util-classes.js", "js/script.js"],
+			"matches": ["*://vetot.com.vn/*", "*://holavietnam.com.vn/*", "*://muadi.com.vn/*", "*://onlineairticket.vn/*", "*://bookingticket.vn/*", "*://onlinebookingticket.vn/*", "*://vnabooking.com.vn/*", "*://booking.vietjetair.com/*" ],
+			"css": ["css/style.css"]
+		}
+	]
+}
