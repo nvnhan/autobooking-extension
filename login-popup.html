@@ -1,202 +1,154 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Đăng nhập</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link rel="stylesheet" href="./css/style.css" />
+		<script type="text/javascript" src="./js/jquery.js"></script>
+		<script type="text/javascript" src="./js/config.js"></script>
+		<script type="text/javascript" src="js/util-classes.js"></script>
+		<script type="text/javascript" src="./js/login-popup.js"></script>
+	</head>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Đăng nhập</title>
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <script type="text/javascript" src="./js/jquery.js"></script>
-    <script type="text/javascript" src="./js/config.js"></script>
-    <script type="text/javascript" src="js/util-classes.js"></script>
-    <script type="text/javascript" src="./js/login-popup.js"></script>
-    <style>
-        .divH20 {
-            clear: both;
-            height: 20px;
-        }
+	<body>
+		<div id="login-popup">
+			<div class="container-fluid">
+				<div id="form-login" style="display: none;">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="panel-heading">
+								<h3 class="panel-title">Đăng nhập hệ thống</h3>
+							</div>
+							<div class="panel-body">
+								<form class="form">
+									<div class="form-group">
+										<label for="input_username">Email hoặc tên đăng nhập</label>
+										<input class="form-control" id="input_username" placeholder="Nhập tên đăng nhập hoặc email" name="username" required />
+									</div>
+									<div class="form-group">
+										<label for="input_password">Mật khẩu</label>
+										<input class="form-control" id="input_password" placeholder="Nhập mật khẩu" type="password" name="password" required />
+									</div>
+									<div class="alert alert-danger" id="errorMsg" style="display: none;"></div>
+									<button class="btn btn-primary" id="btnLogin">Đăng nhập</button>
+								</form>
+								<div class="divH20"></div>
+								<div class="alert alert-warning">Bạn cần đăng nhập để sử dụng công cụ này</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End login -->
 
-        html,
-        body {
-            font-size: 95% !important;
-        }
+				<div id="welcome" style="display: none;">
+					<div class="alert alert-success">
+						Chào <strong id="username"></strong> <button class="btn btn-default" id="btnLogout">Thoát</button><br />
+						Ngày hết hạn <i id="ngayhethan"></i>
+					</div>
+					<div class="panel-body">
+						<div class="form">
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="form-group">
+										<label for="typeCost">Loại giá</label>
+										<div class="form-group" id="typeCost"><input type="radio" name="typeCost" value="base" />Giá vé gốc <input type="radio" name="typeCost" value="total" /> Giá vé đã kèm thuế phí</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="maxCost">
+											Giá vé tối đa
+										</label>
+										<input type="number" id="maxCost" placeholder="Giá vé tối đa" class="form-control" />
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="placeCd" style="display: block;">Chọn hãng</label>
+										<input type="checkbox" name="airType" value="vn" checked /> VN <input type="checkbox" name="airType" value="vj" checked /> VJ <input type="checkbox" name="airType" value="bl" checked /> BL
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="form-group">
+										<label for="placeCd">Chuyến bay</label>
+										<input type="text" class="form-control" placeholder="Để trống để tìm tất cả" id="placeCd" />
+										<small>Nhập nhiều CB cách nhau bằng dấu ,</small>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="timeRefresh">Thời gian refresh</label>
+										<input type="text" id="timeRefresh" class="form-control" placeholder="Tính theo giây" />
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="autoBooking" style="display: block;">Sau khi tìm thấy</label>
+										<input type="checkbox" id="autoBooking" class="checkbox-inline" /> Tự động Đặt Chỗ
+									</div>
+								</div>
+							</div>
 
-        .form-group {
-            margin-bottom: 7px;
-        }
+							<!-- NVNhan -->
+							<!-- ///////////// -->
+							<label>Thông tin khách hàng</label>
+							<div class="row">
+								<div class="col-xs-6">
+									<div class="form-group">
+										<input type="text" class="form-control" name="tenkhachhang" id="tenkhachhang" placeholder="Tên khách đặt vé" />
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group">
+										<input type="text" class="form-control" name="diachi" id="diachi" placeholder="Đ/c khách hàng (không dấu)" />
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-6">
+									<div class="form-group">
+										<input type="text" class="form-control" name="sdt" id="sdt" placeholder="Số điện thoại đặt vé" />
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group">
+										<input type="email" class="form-control" name="email" id="email" placeholder="Email khách hàng" />
+									</div>
+								</div>
+							</div>
 
-        #login-popup {
-            width: 400px;
-            height: auto;
-            padding-bottom: 5px;
-        }
+							<label>Danh sách hành khách</label>
+							<div class="form-group">
+								<select id="soHanhKhach" name="soHanhKhach" class="form-control">
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+									<option value="7">7</option>
+									<option value="8">8</option>
+									<option value="9">9</option>
+								</select>
+							</div>
 
-        .nhapTen label {
-            margin-bottom: 0;
-            margin-top: 3px;
-        }
+							<div class="nhapTen"></div>
 
-        .load_data {
-            width: 100%;
-        }
-
-        .load_data>* {
-            display: inline-block;
-        }
-
-        .load_data>select {
-            width: 20%;
-            padding-left: 4px;
-            padding-right: 4px;
-            margin-right: 5px
-        }
-
-        .load_data>.txtkhach {
-            width: 32%;
-            padding-left: 4px;
-            padding-right: 4px;
-            margin-right: 5px
-        }
-
-        .load_data>#date {
-            width: 38%;
-            padding-left: 4px;
-            padding-right: 4px;
-            margin-right: 5px;
-        }
-
-        .load_data>.checkbox {
-            width: 20px;
-            height: 20px;
-            margin-top: 6px;
-            position: absolute;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="login-popup">
-        <div class="container-fluid">
-            <div class="row">
-
-                <div id="form-login" class="panel panel-default" style="display: none;">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Đăng nhập hệ thống</h3>
-                    </div>
-                    <div class="panel-body">
-                        <form class="form">
-                            <div class="form-group">
-                                <label for="input_username">Email hoặc tên đăng nhập</label>
-                                <input class="form-control" id="input_username" placeholder="Nhập tên đăng nhập hoặc email" name="username" required />
-                            </div>
-                            <div class="form-group">
-                                <label for="input_password">Mật khẩu</label>
-                                <input class="form-control" id="input_password" placeholder="Nhập mật khẩu" type="password" name="password" required />
-                            </div>
-                            <div class="alert alert-danger" id="errorMsg" style="display: none;"></div>
-                            <button class="btn btn-primary" id="btnLogin">Đăng nhập</button>
-                        </form>
-                        <div class="divH20"></div>
-                        <div class="alert alert-warning">Bạn cần đăng nhập để sử dụng công cụ này</div>
-                    </div>
-                </div>
-                <!-- End login -->
-                
-                <div id="welcome" class="panel panel-default" style="display: none;">
-                    <div class="alert alert-success">Chào <strong id="username"></strong>
-                        <button class="btn btn-default" id="btnLogout">Thoát</button><br />
-                        Ngày hết hạn <i id="ngayhethan"></i>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form">
-                            <div class="form-group">
-                                <label for="typeCost">Loại giá</label>
-                                <div class="form-group" id="typeCost">
-                                    <label><input type="radio" name="typeCost" value="base">Giá vé gốc</label>
-                                    <label><input type="radio" name="typeCost" value="total"> Giá vé đã kèm thuế
-                                        phí</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="maxCost">
-                                    Giá vé tối đa
-                                </label>
-                                <input type="number" id="maxCost" placeholder="Giá vé tối đa" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="placeCd">Chọn hãng</label>
-                                <input type="checkbox" name="airType" value="vn" checked> VN
-                                <input type="checkbox" name="airType" value="vj" checked> VJ
-                                <input type="checkbox" name="airType" value="bl" checked> BL
-
-                            </div>
-                            <div class="form-group">
-                                <label for="placeCd">Chuyến bay</label>
-                                <input type="text" class="form-control" placeholder="Để trống để tìm tất cả"
-                                    id="placeCd">
-                                <span>Nhập nhiều CB cách nhau bằng dấu ,</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="timeRefresh">Thời gian refresh</label>
-                                <input type="text" id="timeRefresh" class="form-control" placeholder="Tính theo giây">
-                            </div>
-                            <div class="form-group">
-                                <label for="autoBooking">Sau khi tìm thấy</label>
-                                <input type="checkbox" id="autoBooking" class="checkbox-inline"> Tự động Đặt Chỗ
-                            </div>
-
-                            <!-- NVNhan -->
-                            <!-- ///////////// -->
-                            <label>Thông tin khách hàng</label>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="tenkhachhang" id="tenkhachhang"
-                                    pattern="\d" placeholder="Nhập tên khách hàng đặt vé" />
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="diachi" id="diachi" pattern="\d"
-                                    placeholder="Nhập địa chỉ khách hàng (không dấu)" />
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="sdt" id="sdt" pattern="\d"
-                                    placeholder="Nhập số điện thoại đặt vé" />
-                            </div>
-                            <div class="form-group">
-                                <input type="email" class="form-control" name="email" id="email"
-                                    placeholder="Nhập địa chỉ email khách hàng" />
-                            </div>
-
-                            <label>Danh sách hành khách</label>
-                            <div class="form-group">
-                                <label class="control-label col-md-2">Số hành khách</label>
-                                <div class="col-md-10">
-                                    <select id="soHanhKhach" name="soHanhKhach" class="form-control">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="nhapTen">
-                            </div>
-
-                            <br>
-                            <button class="btn btn-danger" id="btnTriggerFollow"><strong
-                                    id="btnTriggerFollowMsg"></strong></button>
-
-                        </div>
-                        <div class="divH20"></div>
-                        <div class="alert alert-info">Trạng thái: <strong id="followStateMsg"></strong></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-
+							<br />
+							<button class="btn btn-danger" id="btnTriggerFollow"><strong id="btnTriggerFollowMsg"></strong></button>
+						</div>
+						<div class="divH20"></div>
+						<div class="alert alert-info">Trạng thái: <strong id="followStateMsg"></strong></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
