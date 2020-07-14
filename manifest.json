@@ -7,14 +7,7 @@
 		"default_popup": "login-popup.html"
 	},
 
-	"permissions": [
-		"http://*/*",
-        "https://*/*",
-        "activeTab",
-        "tabs",
-		"notifications",
-		"storage"
-	],
+	"permissions": ["http://*/*", "https://*/*", "activeTab", "tabs", "notifications", "storage"],
 
 	"icons": {
 		"32": "./image/plane-logo.png",
@@ -27,14 +20,10 @@
 		"page": "background.html"
 	},
 
-	"web_accessible_resources": [
-		"js/inject.js"
-	],
-	
 	"content_scripts": [
 		{
 			"js": ["js/jquery.js", "js/config.js", "js/util-classes.js", "js/script.js"],
-			"matches": ["*://vetot.com.vn/*", "*://holavietnam.com.vn/*", "*://muadi.com.vn/*", "*://onlineairticket.vn/*", "*://bookingticket.vn/*", "*://onlinebookingticket.vn/*", "*://vnabooking.com.vn/*", "*://booking.vietjetair.com/*" ]
+			"matches": ["*://vetot.com.vn/*", "*://holavietnam.com.vn/*", "*://muadi.com.vn/*", "*://onlineairticket.vn/*", "*://bookingticket.vn/*", "*://onlinebookingticket.vn/*", "*://vnabooking.com.vn/*", "*://booking.vietjetair.com/*"]
 		}
 	]
 }

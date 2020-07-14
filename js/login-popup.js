@@ -1,20 +1,12 @@
 (() => {
 	const pageState = new PageState();
-	pageState.onStateChange((state) => {
-		renderFollowBar(state);
-	});
 
-	pageState.onFollowStateChange((followState) => {
-		renderFollowStateElements(followState);
-	});
+	pageState.onStateChange((state) => renderFollowBar(state));
+	pageState.onFollowStateChange((followState) => renderFollowStateElements(followState));
 
-	let getCurrentTab = (callback) => {
-		chrome.tabs.query({ active: true, windowId: chrome.windows.WINDOW_ID_CURRENT }, function (tabs) {
-			callback(tabs[0]);
-		});
-	};
+	const getCurrentTab = (callback) => chrome.tabs.query({ active: true, windowId: chrome.windows.WINDOW_ID_CURRENT }, (tabs) => callback(tabs[0]));
 
-	let getRequestData = function () {
+	const getRequestData = () => {
 		let checkedAirlines = [];
 		$("input[type=checkbox][name=airType]:checked").each(function () {
 			checkedAirlines.push($(this).val());
@@ -47,7 +39,7 @@
 		};
 	};
 
-	let renderFollowBar = (state) => {
+	const renderFollowBar = (state) => {
 		$("input[name=typeCost]").val([state.request.cost_type]);
 		$("#maxCost").val(state.request.max_cost);
 		$("#placeCd").val(state.request.plane_cd);
@@ -96,43 +88,27 @@
 		renderFollowStateElements(state.result.follow_state);
 	};
 
-	let renderFollowStateElements = (followState) => {
+	const renderFollowStateElements = (followState) => {
 		$("#followStateMsg").text(Config.state[followState].title);
-		if (canStart(followState)) {
-			$("#btnTriggerFollowMsg").text("Bắt đầu theo dõi");
-		} else {
-			$("#btnTriggerFollowMsg").text("Dừng theo dõi");
-		}
+		$("#btnTriggerFollowMsg").text(canStart(followState) ? "Bắt đầu theo dõi" : "Dừng theo dõi");
 	};
 
-	let triggerFollow = (state) => {
-		if (canStart(state.result.follow_state)) {
-			console.log("start");
-			getCurrentTab((tab) => {
-				let request = new RequestDecorator(getRequestData()).withTab(tab).withStartFollowAction().build();
-				chrome.runtime.sendMessage(request, (response) => {
-					pageState.setState(response.state);
-				});
-			});
-		} else {
-			console.log("stop");
-			getCurrentTab((tab) => {
-				let request = new RequestDecorator(getRequestData()).withTab(tab).withStopFollowAction().build();
-				chrome.runtime.sendMessage(request, (response) => {
-					pageState.setState(response.state);
-				});
-			});
-		}
+	const triggerFollow = (state) => {
+		getCurrentTab((tab) => {
+			let request = new RequestDecorator(getRequestData()).withTab(tab).withStopFollowAction();
+			if (canStart(state.result.follow_state)) request = request.withStartFollowAction();
+			request = request.build();
+
+			chrome.runtime.sendMessage(request, (response) => pageState.setState(response.state));
+		});
 	};
 
-	let canStart = (followState) => {
-		return followState == "idle" || followState == "found";
-	};
+	const canStart = (followState) => followState == "idle" || followState == "found";
 
 	$(document).ready(() => {
 		let getCurrentFollowStateInterval = null;
 
-		let render = () => {
+		const render = () => {
 			if (getCurrentFollowStateInterval) clearInterval(getCurrentFollowStateInterval);
 			chrome.storage.local.get("user", (data) => {
 				if (data.user) {
@@ -141,15 +117,11 @@
 					$("#username").text(data.user.hoten);
 					$("#ngayhethan").text(data.user.ngayhethan);
 					getCurrentTab((tab) => {
-						chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => {
-							console.log("popup-state", response.state);
-							pageState.setState(response.state);
-						});
+						// Get state from background.js
+						chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => pageState.setState(response.state));
 
 						getCurrentFollowStateInterval = setInterval(() => {
-							chrome.runtime.sendMessage({ action: "get-follow-state", tab: tab }, (response) => {
-								pageState.setFollowState(response.follow_state);
-							});
+							chrome.runtime.sendMessage({ action: "get-follow-state", tab: tab }, (response) => pageState.setFollowState(response.follow_state));
 						}, 500);
 					});
 				} else {
@@ -166,21 +138,7 @@
 
 		// Ấn nút theo dõi
 		///////////////////
-		$("#btnTriggerFollow").on("click", () => {
-			triggerFollow(pageState.getState());
-
-			// Đồng bộ hóa thông tin hành khách
-			var array = [];
-			id_tab = "";
-			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-				id_tab = tabs[0].id;
-				$(".nhapTen input.txtkhach").each(function (index) {
-					var a = $(this).val();
-					array.push(a);
-				});
-				chrome.storage.sync.set({ data: { data: array, id_tab: id_tab } });
-			});
-		});
+		$("#btnTriggerFollow").on("click", () => triggerFollow(pageState.getState()));
 
 		$("#btnLogin").on("click", (e) => {
 			e.preventDefault();
@@ -193,7 +151,7 @@
 				hoten: "Default admin",
 				ngayhethan: "31/12/2099",
 			};
-			if (username === "admin" && password === "admin") {
+			if (username === "admin" && password === "1") {
 				chrome.storage.local.set({ user: defaultUser }, () => {
 					render();
 				});
@@ -255,26 +213,5 @@
 			$(".nhapTen").html("");
 			$(".nhapTen").html(nhapTen);
 		});
-
-		//Thuật toán đồng bộ hóa
-		// // Load danh sách hành khách khi chưa ấn nút fill
-		// chrome.storage.sync.get({"data":{}}, function(syncData){
-		//     $("#soHanhKhach>option:nth-of-type("+syncData["data"]["data"].length+")").attr({"selected":"selected"});
-		//     let nhapTen = "";
-		//     for(let ie = 0; ie < syncData["data"]["data"].length; ie++)
-		//     {
-		//         nhapTen += "<div class=\"row\"><label class=\"control-label col-md-2\">Khách " + (ie + 1) + "</label>";
-		//         nhapTen += '<div class="load_data col-md-10"><input type="text" class="txtkhach form-control" placeholder="Họ và tên" id="txtKhach'+(ie + 1)+'" value="'+syncData["data"]["data"][ie]+'"><select class="form-control gioitinh">'+
-		//             '<option value="MR">MR (Quý ông)</option>'+
-		//             '<option value="MRS">MRS (Quý bà)</option>'+
-		//             '<option value="MS">MS (Quý cô)</option>'+
-		//             '<option value="MSTR">MSTR (Bé trai)</option>'+
-		//             '<option value="MISS">MISS (Bé gái)</option>'+
-		//             '</select><input type="date" id="date" placeholder="Ngày sinh" class="form-control ngaysinh">'+
-		//             '<input type="checkbox" class="checkbox" checked /></div></div>';
-		//     }
-		//     $('.nhapTen').html('');
-		//     $('.nhapTen').html(nhapTen);
-		// });
 	}); // End ready
 })();

@@ -62,7 +62,8 @@ body {
 	padding: 0;
 }
 
-.alert-success, .alert-info {
+.alert-success,
+.alert-info {
 	margin-bottom: 0;
 }
 
@@ -74,7 +75,16 @@ body {
 	margin-bottom: 0;
 }
 
-.col-xs-12, .col-xs-6 {
+.col-xs-12,
+.col-xs-6 {
 	padding-left: 10px;
 	padding-right: 10px;
+}
+
+.pr-2 {
+	padding-right: 10px;
+}
+
+label.pr-2 {
+	font-weight: normal;
 }

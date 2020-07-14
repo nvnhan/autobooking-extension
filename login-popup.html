@@ -43,8 +43,8 @@
 
 				<div id="welcome" style="display: none;">
 					<div class="alert alert-success">
-						Chào <strong id="username"></strong> <button class="btn btn-default" id="btnLogout">Thoát</button><br />
-						Ngày hết hạn <i id="ngayhethan"></i>
+						Chào <strong id="username"></strong> <small>(Ngày hết hạn <i id="ngayhethan"></i>)</small>
+						<button class="btn btn-danger btn-xs" style="float: right;" id="btnLogout">Thoát</button>
 					</div>
 					<div class="panel-body">
 						<div class="form">
@@ -52,7 +52,10 @@
 								<div class="col-xs-12">
 									<div class="form-group">
 										<label for="typeCost">Loại giá</label>
-										<div class="form-group" id="typeCost"><input type="radio" name="typeCost" value="base" />Giá vé gốc <input type="radio" name="typeCost" value="total" /> Giá vé đã kèm thuế phí</div>
+										<div class="form-group" id="typeCost">
+											<label class="pr-2"><input type="radio" name="typeCost" value="base" /> Giá vé gốc </label>
+											<label class="pr-2"><input type="radio" name="typeCost" value="total" /> Giá vé đã kèm thuế phí</label>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -68,7 +71,9 @@
 								<div class="col-xs-6">
 									<div class="form-group">
 										<label for="placeCd" style="display: block;">Chọn hãng</label>
-										<input type="checkbox" name="airType" value="vn" checked /> VN <input type="checkbox" name="airType" value="vj" checked /> VJ <input type="checkbox" name="airType" value="bl" checked /> BL
+										<label class="pr-2"><input type="checkbox" name="airType" value="vn" checked /> VN</label>
+										<label class="pr-2"><input type="checkbox" name="airType" value="vj" checked /> VJ</label>
+										<label class="pr-2"><input type="checkbox" name="airType" value="bl" checked /> BL</label>
 									</div>
 								</div>
 							</div>
@@ -85,13 +90,13 @@
 								<div class="col-xs-6">
 									<div class="form-group">
 										<label for="timeRefresh">Thời gian refresh</label>
-										<input type="text" id="timeRefresh" class="form-control" placeholder="Tính theo giây" />
+										<input type="number" id="timeRefresh" class="form-control" placeholder="Tính theo giây" />
 									</div>
 								</div>
 								<div class="col-xs-6">
 									<div class="form-group">
 										<label for="autoBooking" style="display: block;">Sau khi tìm thấy</label>
-										<input type="checkbox" id="autoBooking" class="checkbox-inline" /> Tự động Đặt Chỗ
+										<label class="pr-2"><input type="checkbox" id="autoBooking" /> Tự động đặt chỗ</label>
 									</div>
 								</div>
 							</div>
@@ -107,19 +112,19 @@
 								</div>
 								<div class="col-xs-6">
 									<div class="form-group">
-										<input type="text" class="form-control" name="diachi" id="diachi" placeholder="Đ/c khách hàng (không dấu)" />
+										<input type="text" class="form-control" name="sdt" id="sdt" placeholder="Số điện thoại đặt vé" />
 									</div>
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-xs-6">
 									<div class="form-group">
-										<input type="text" class="form-control" name="sdt" id="sdt" placeholder="Số điện thoại đặt vé" />
+										<input type="text" class="form-control" name="diachi" id="diachi" placeholder="Địa chỉ KH (không dấu)" />
 									</div>
 								</div>
 								<div class="col-xs-6">
 									<div class="form-group">
-										<input type="email" class="form-control" name="email" id="email" placeholder="Email khách hàng" />
+										<input type="email" class="form-control" name="email" id="email" placeholder="Email KH" />
 									</div>
 								</div>
 							</div>
