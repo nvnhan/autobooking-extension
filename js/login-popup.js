@@ -15,16 +15,17 @@
 			checkedAirlines.push($(this).val());
 		});
 		let hanhkhachs = [];
-		$(".load_data").each(function () {
-			if ($(this).children(".txtkhach").val() != "") {
+		$(".hanh-khach .row").each(function () {
+			if ($(this).find("#ho-ten").val() != "") {
 				hanhkhachs.push({
-					hoten: $(this).children(".txtkhach").val().trim(),
-					gioitinh: $(this).children(".gioitinh").val(),
-					ngaysinh: $(this).children(".ngaysinh").val(),
-					check: $(this).children(".checkbox").prop("checked"),
+					hoten: $(this).find("#ho-ten").val().trim(),
+					gioitinh: $(this).find("#gioi-tinh").val(),
+					ngaysinh: $(this).find("#ngay-sinh").val(),
+					check: $(this).find("#chon").prop("checked"),
 				});
 			}
 		});
+
 		return {
 			cost_type: $("input[name=typeCost]:checked").val(),
 			max_cost: $("#maxCost").val(),
@@ -63,31 +64,35 @@
 		$("#sdt").val(state.request.sdt);
 		$("#email").val(state.request.email);
 
-		let nhapTen = "";
+		let s = "";
 		// Nếu có danh sách hành khách
 		if (state.request.hanhkhach.length > 0) {
-			$("#soHanhKhach>option:nth-of-type(" + state.request.hanhkhach.length + ")").attr({ selected: "selected" });
 			for (let ie = 0; ie < state.request.hanhkhach.length; ie++) {
-				nhapTen += '<div class="row"><label class="control-label col-md-2">Khách ' + (ie + 1) + "</label>";
-				nhapTen += '<div class="load_data col-md-10"><input type="text" class="txtkhach form-control" placeholder="Họ và tên" id="txtKhach' + (ie + 1) + '" value="' + state.request.hanhkhach[ie].hoten + '"><select class="form-control gioitinh">';
+				s +=
+					"<div class='row'><div class='col-xs-4 ho-ten'><input type='text' id='ho-ten' class='form-control input-sm' placeholder='Họ tên' value='" +
+					state.request.hanhkhach[ie].hoten +
+					"' /></div>";
+				s +=
+					"<div class='col-xs-4 ngay-sinh'><input type='date' id='ngay-sinh' class='form-control input-sm' value='" +
+					state.request.hanhkhach[ie].ngaysinh +
+					"' /></div>";
 
-				nhapTen += '<option value="MR"' + (state.request.hanhkhach[ie].gioitinh == "MR" && "selected") + ">MR (Quý ông)</option>";
-				nhapTen += '<option value="MRS"' + (state.request.hanhkhach[ie].gioitinh == "MRS" && "selected") + ">MRS (Quý bà)</option>";
-				nhapTen += '<option value="MS"' + (state.request.hanhkhach[ie].gioitinh == "MS" && "selected") + ">MS (Quý cô)</option>";
-				nhapTen += '<option value="MSTR"' + (state.request.hanhkhach[ie].gioitinh == "MSTR" && "selected") + ">MSTR (Bé trai)</option>";
-				nhapTen += '<option value="MISS"' + (state.request.hanhkhach[ie].gioitinh == "MISS" && "selected") + ">MISS (Bé gái)</option>";
-				nhapTen += '</select><input type="date" id="date" placeholder="Ngày sinh" class="form-control ngaysinh" value="' + state.request.hanhkhach[ie].ngaysinh + '">';
-				nhapTen += '<input type="checkbox" class="checkbox"' + (state.request.hanhkhach[ie].check && "checked") + " /></div></div>";
+				s += "<div class='col-xs-2 gioi-tinh'><select id='gioi-tinh' class='form-control input-sm'>";
+				s += '<option value="MR"' + (state.request.hanhkhach[ie].gioitinh == "MR" && "selected") + ">MR (Quý ông)</option>";
+				s += '<option value="MRS"' + (state.request.hanhkhach[ie].gioitinh == "MRS" && "selected") + ">MRS (Quý bà)</option>";
+				s += '<option value="MS"' + (state.request.hanhkhach[ie].gioitinh == "MS" && "selected") + ">MS (Quý cô)</option>";
+				s += '<option value="MSTR"' + (state.request.hanhkhach[ie].gioitinh == "MSTR" && "selected") + ">MSTR (Bé trai)</option>";
+				s += '<option value="MISS"' + (state.request.hanhkhach[ie].gioitinh == "MISS" && "selected") + ">MISS (Bé gái)</option>";
+				s += "</select></div>";
+
+				s +=
+					"<div class='col-xs-2 chuc-nang'><input type='checkbox' id='chon' " +
+					(state.request.hanhkhach[ie].check && "checked") +
+					" /><button class='btn btn-xs btn-danger'>x</button></div></div>";
 			}
-			$(".nhapTen").html("");
-			$(".nhapTen").html(nhapTen);
-		} else {
-			$("#soHanhKhach>option:nth-of-type(1)").attr({ selected: "selected" });
-			nhapTen += '<div class="row"><label class="control-label col-md-2">Khách 1</label>';
-			nhapTen += '<div class="load_data col-md-10"><input type="text" class="txtkhach form-control" placeholder="Họ và tên" id="txtKhach1"><select class="form-control gioitinh">' + '<option value="MR">MR (Quý ông)</option>' + '<option value="MRS">MRS (Quý bà)</option>' + '<option value="MS">MS (Quý cô)</option>' + '<option value="MSTR">MSTR (Bé trai)</option>' + '<option value="MISS">MISS (Bé gái)</option>' + '</select><input type="date" id="date" placeholder="Ngày sinh" class="form-control ngaysinh">' + '<input type="checkbox" class="checkbox" checked /></div></div>';
-
-			$(".nhapTen").html("");
-			$(".nhapTen").html(nhapTen);
+			$(".hanh-khach").html("");
+			$(".hanh-khach").html(s);
+			$(".hanh-khach").on("click", "button", (e) => xoaHK(e));
 		}
 
 		renderFollowStateElements(state.result.follow_state);
@@ -98,6 +103,7 @@
 	const renderFollowStateElements = (followState) => {
 		$("#followStateMsg").text(Config.state[followState].title);
 		$("#btnTriggerFollowMsg").text(canStart(followState) ? "Bắt đầu theo dõi" : "Dừng theo dõi");
+		$("#btnThemHanhKhach").attr("disabled", !canStart(followState));
 	};
 
 	const triggerFollow = (state) => {
@@ -109,6 +115,8 @@
 			chrome.runtime.sendMessage(request, (response) => pageState.setState(response.state));
 		});
 	};
+
+	const xoaHK = (e) => e.target.closest(".row").remove();
 
 	$(document).ready(() => {
 		let getCurrentFollowStateInterval = null;
@@ -124,13 +132,33 @@
 					$("#form-login").hide();
 					$("#username").text(data.user.hoten);
 					$("#ngayhethan").text(data.user.ngayhethan);
-					getCurrentTab((tab) => {
-						// Get state of current tab from background.js
-						chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => pageState.setState(response.state));
 
-						getCurrentFollowStateInterval = setInterval(() => {
-							chrome.runtime.sendMessage({ action: "get-follow-state", tab: tab }, (response) => pageState.setFollowState(response.follow_state));
-						}, 500);
+					getCurrentTab((tab) => {
+						const url = tab.url;
+						if (
+							/vetot\.com\.vn/gi.test(url) ||
+							/holavietnam\.com\.vn/gi.test(url) ||
+							/muadi\.com\.vn/gi.test(url) ||
+							/onlinebookingticket\.vn/gi.test(url) ||
+							/onlineairticket\.vn/gi.test(url) ||
+							/bookingticket\.vn/gi.test(url) ||
+							/vnabooking/gi.test(url) ||
+							/vietjetair/gi.test(url)
+						) {
+							$(".content").show();
+							$("#error-page").hide();
+							// Get state of current tab from background.js
+							chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => pageState.setState(response.state));
+
+							getCurrentFollowStateInterval = setInterval(() => {
+								chrome.runtime.sendMessage({ action: "get-follow-state", tab: tab }, (response) =>
+									pageState.setFollowState(response.follow_state)
+								);
+							}, 500);
+						} else {
+							$(".content").hide();
+							$("#error-page").show();
+						}
 					});
 				} else {
 					$("#form-login").show();
@@ -210,16 +238,17 @@
 			chrome.storage.local.set({ user: null }, render);
 		});
 
-		// Chọn số hành khách
-		$('select[name="soHanhKhach"]').change(() => {
-			let nhapTen = "";
-			for (let i = 0; i < $('select[name="soHanhKhach"]').val(); i++) {
-				nhapTen += '<div class="row"><label class="control-label col-md-2">Khách ' + (i + 1) + "</label>";
-				nhapTen += '<div class="load_data col-md-10"><input type="text" class="txtkhach form-control" placeholder="Họ và tên" id="txtKhach' + (i + 1) + '"><select class="form-control gioitinh">' + '<option value="MR">MR (Quý ông)</option>' + '<option value="MRS">MRS (Quý bà)</option>' + '<option value="MS">MS (Quý cô)</option>' + '<option value="MSTR">MSTR (Bé trai)</option>' + '<option value="MISS">MISS (Bé gái)</option>' + '</select><input type="date" id="date" placeholder="Ngày sinh" class="form-control ngaysinh">' + '<input type="checkbox" class="checkbox" checked /></div></div>';
-			}
+		$("#btnXoaHanhKhach").on("click", (e) => xoaHK(e));
 
-			$(".nhapTen").html("");
-			$(".nhapTen").html(nhapTen);
+		$("#btnThemHanhKhach").on("click", (e) => {
+			e.preventDefault();
+			$(".hanh-khach").append(
+				"<div class='row'><div class='col-xs-4 ho-ten'><input type='text' id='ho-ten' class='form-control input-sm' placeholder='Họ tên' /></div>" +
+					"<div class='col-xs-4 ngay-sinh'><input type='date' id='ngay-sinh' class='form-control input-sm' /></div>" +
+					"<div class='col-xs-2 gioi-tinh'><select id='gioi-tinh' class='form-control input-sm'><option value='MR'>MR (Quý ông)</option><option value='MRS'>MRS (Quý bà)</option><option value='MS'>MS (Quý cô)</option><option value='MSTR'>MSTR (Bé trai)</option><option value='MISS'>MISS (Bé gái)</option></select></div>" +
+					"<div class='col-xs-2 chuc-nang'><input type='checkbox' id='chon' checked /><button class='btn btn-xs btn-danger'>x</button></div></div>"
+			);
+			$(".hanh-khach").on("click", "button", (e) => xoaHK(e));
 		});
 	}); // End ready
 })();
