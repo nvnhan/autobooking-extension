@@ -135,15 +135,15 @@
 
 					getCurrentTab((tab) => {
 						const url = tab.url;
-						if (
-							/vetot\.com\.vn/gi.test(url) ||
-							/holavietnam\.com\.vn/gi.test(url) ||
-							/muadi\.com\.vn/gi.test(url) ||
-							/onlinebookingticket\.vn/gi.test(url) ||
-							/onlineairticket\.vn/gi.test(url) ||
-							/bookingticket\.vn/gi.test(url) ||
-							/vnabooking/gi.test(url) ||
-							/vietjetair/gi.test(url)
+						if (1
+							// /vetot\.com\.vn/gi.test(url) ||
+							// /holavietnam\.com\.vn/gi.test(url) ||
+							// /muadi\.com\.vn/gi.test(url) ||
+							// /onlinebookingticket\.vn/gi.test(url) ||
+							// /onlineairticket\.vn/gi.test(url) ||
+							// /bookingticket\.vn/gi.test(url) ||
+							// /vnabooking/gi.test(url) ||
+							// /vietjetair/gi.test(url)
 						) {
 							$(".content").show();
 							$("#error-page").hide();
