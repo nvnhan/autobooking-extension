@@ -1,11 +1,14 @@
 (() => {
 	const pageState = new PageState();
-
 	pageState.onStateChange((state) => renderFollowBar(state));
 	pageState.onFollowStateChange((followState) => renderFollowStateElements(followState));
 
 	const getCurrentTab = (callback) => chrome.tabs.query({ active: true, windowId: chrome.windows.WINDOW_ID_CURRENT }, (tabs) => callback(tabs[0]));
+	const canStart = (followState) => followState == "idle" || followState == "found";
 
+	/**
+	 * Lấy dữ liệu từ form
+	 */
 	const getRequestData = () => {
 		let checkedAirlines = [];
 		$("input[type=checkbox][name=airType]:checked").each(function () {
@@ -38,7 +41,10 @@
 			booked: [],
 		};
 	};
-
+	/**
+	 * Điền thông tin theo từng tab
+	 * Render lại các giá trị của form tương ứng với dữ liệu state lấy từ background
+	 */
 	const renderFollowBar = (state) => {
 		$("input[name=typeCost]").val([state.request.cost_type]);
 		$("#maxCost").val(state.request.max_cost);
@@ -52,7 +58,6 @@
 			$(this).prop("checked", checked);
 		});
 
-		/////////// Điền thông tin theo từng tab
 		$("#tenkhachhang").val(state.request.tenkhachhang);
 		$("#diachi").val(state.request.diachi);
 		$("#sdt").val(state.request.sdt);
@@ -87,7 +92,9 @@
 
 		renderFollowStateElements(state.result.follow_state);
 	};
-
+	/**
+	 * Hiển thị trạng thái hoạt động của tool
+	 */
 	const renderFollowStateElements = (followState) => {
 		$("#followStateMsg").text(Config.state[followState].title);
 		$("#btnTriggerFollowMsg").text(canStart(followState) ? "Bắt đầu theo dõi" : "Dừng theo dõi");
@@ -103,11 +110,12 @@
 		});
 	};
 
-	const canStart = (followState) => followState == "idle" || followState == "found";
-
 	$(document).ready(() => {
 		let getCurrentFollowStateInterval = null;
 
+		/**
+		 * Khi bật tool => render lại giao diện của tool
+		 */
 		const render = () => {
 			if (getCurrentFollowStateInterval) clearInterval(getCurrentFollowStateInterval);
 			chrome.storage.local.get("user", (data) => {
@@ -117,7 +125,7 @@
 					$("#username").text(data.user.hoten);
 					$("#ngayhethan").text(data.user.ngayhethan);
 					getCurrentTab((tab) => {
-						// Get state from background.js
+						// Get state of current tab from background.js
 						chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => pageState.setState(response.state));
 
 						getCurrentFollowStateInterval = setInterval(() => {
