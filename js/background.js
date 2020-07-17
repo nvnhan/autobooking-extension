@@ -4,6 +4,10 @@
 // XỬ LÝ VÀ THÔNG BÁO TỚI USER
 ///////////////////////
 
+// chrome.tabs.query({}, (tabs) => {
+// 	console.log("Chrome tabs", tabs);
+// });
+
 chrome.storage.local.set({ user: null });
 
 const data = {};
@@ -29,7 +33,11 @@ const defaultInitState = {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	let tabId = request.tab ? request.tab.id : sender.tab.id;
 
-	if (!data[tabId]) data[tabId] = defaultInitState;
+	if (!data[tabId]) {
+		data[tabId] = defaultInitState;
+	}
+	// console.log(`Tab${tabId}-FS.${data[tabId].result.follow_state}`);
+	// console.log(data);
 
 	switch (request.action) {
 		case "get-follow-state":
@@ -37,11 +45,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "start-follow":
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "waiting_result" } });
 			console.log("after set", data);
-			// chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
+			// Send data (state) cho script.js ở tab tương ứng
+			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
 			return sendResponse({ state: data[tabId] });
 		case "stop-follow":
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "idle" } });
-			// chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
+			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
 			return sendResponse({ state: data[tabId] });
 		case "get-state":
 			sendResponse({ state: data[tabId] });
@@ -73,7 +82,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			break;
 		case "reload":
 			console.log("reload");
-			// chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
+			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
 			return sendResponse({ state: data[tabId] });
 			break;
 		case "set-state":
@@ -148,3 +157,14 @@ let notifyFound = (selectedFlight, auto_booking) => {
 			});
 	});
 };
+
+$(function () {
+	chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+		if (request.how_id_tab === "ID") {
+			chrome.tabs.query({ active: true }, function (tabs) {
+				chrome.tabs.sendMessage(tabs[0].id, { id_is: tabs[0]["id"] });
+				console.info("Đã send");
+			});
+		}
+	});
+});

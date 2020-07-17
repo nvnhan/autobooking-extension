@@ -146,7 +146,7 @@
 					getCurrentTab((tab) => {
 						const url = tab.url;
 						if (
-							1 ||
+							// 1 ||
 							/vetot\.com\.vn/gi.test(url) ||
 							/holavietnam\.com\.vn/gi.test(url) ||
 							/muadi\.com\.vn/gi.test(url) ||
