@@ -64,39 +64,43 @@
 		$("#sdt").val(state.request.sdt);
 		$("#email").val(state.request.email);
 
+		renderListHanhKhach(state.request.hanhkhach);
+		renderFollowStateElements(state.result.follow_state);
+	};
+
+	const renderListHanhKhach = (hanhkhachs) => {
 		let s = "";
 		// Nếu có danh sách hành khách
-		if (state.request.hanhkhach.length > 0) {
-			for (let ie = 0; ie < state.request.hanhkhach.length; ie++) {
+		if (hanhkhachs.length > 0) {
+			for (let i = 0; i < hanhkhachs.length; i++) {
 				s +=
 					"<div class='row'><div class='col-xs-4 ho-ten'><input type='text' id='ho-ten' class='form-control input-sm' placeholder='Họ tên' value='" +
-					state.request.hanhkhach[ie].hoten +
+					hanhkhachs[i].hoten +
 					"' /></div>";
 				s +=
 					"<div class='col-xs-4 ngay-sinh'><input type='date' id='ngay-sinh' class='form-control input-sm' value='" +
-					state.request.hanhkhach[ie].ngaysinh +
+					hanhkhachs[i].ngaysinh +
 					"' /></div>";
 
 				s += "<div class='col-xs-2 gioi-tinh'><select id='gioi-tinh' class='form-control input-sm'>";
-				s += '<option value="MR"' + (state.request.hanhkhach[ie].gioitinh == "MR" && "selected") + ">MR (Quý ông)</option>";
-				s += '<option value="MRS"' + (state.request.hanhkhach[ie].gioitinh == "MRS" && "selected") + ">MRS (Quý bà)</option>";
-				s += '<option value="MS"' + (state.request.hanhkhach[ie].gioitinh == "MS" && "selected") + ">MS (Quý cô)</option>";
-				s += '<option value="MSTR"' + (state.request.hanhkhach[ie].gioitinh == "MSTR" && "selected") + ">MSTR (Bé trai)</option>";
-				s += '<option value="MISS"' + (state.request.hanhkhach[ie].gioitinh == "MISS" && "selected") + ">MISS (Bé gái)</option>";
+				s += '<option value="MR"' + (hanhkhachs[i].gioitinh == "MR" && "selected") + ">MR (Quý ông)</option>";
+				s += '<option value="MRS"' + (hanhkhachs[i].gioitinh == "MRS" && "selected") + ">MRS (Quý bà)</option>";
+				s += '<option value="MS"' + (hanhkhachs[i].gioitinh == "MS" && "selected") + ">MS (Quý cô)</option>";
+				s += '<option value="MSTR"' + (hanhkhachs[i].gioitinh == "MSTR" && "selected") + ">MSTR (Bé trai)</option>";
+				s += '<option value="MISS"' + (hanhkhachs[i].gioitinh == "MISS" && "selected") + ">MISS (Bé gái)</option>";
 				s += "</select></div>";
 
 				s +=
 					"<div class='col-xs-2 chuc-nang'><input type='checkbox' id='chon' " +
-					(state.request.hanhkhach[ie].check && "checked") +
+					(hanhkhachs[i].check && "checked") +
 					" /><button class='btn btn-xs btn-danger'>x</button></div></div>";
 			}
 			$(".hanh-khach").html("");
 			$(".hanh-khach").html(s);
 			$(".hanh-khach").on("click", "button", (e) => xoaHK(e));
 		}
-
-		renderFollowStateElements(state.result.follow_state);
 	};
+
 	/**
 	 * Hiển thị trạng thái hoạt động của tool
 	 */
@@ -118,6 +122,12 @@
 
 	const xoaHK = (e) => e.target.closest(".row").remove();
 
+	const convertDate = (s) => {
+		const da = s.split("/");
+		if (da.length === 3) return da[2] + "-" + da[1] + "-" + da[0];
+		return s;
+	};
+
 	$(document).ready(() => {
 		let getCurrentFollowStateInterval = null;
 
@@ -135,15 +145,16 @@
 
 					getCurrentTab((tab) => {
 						const url = tab.url;
-						if (1
-							// /vetot\.com\.vn/gi.test(url) ||
-							// /holavietnam\.com\.vn/gi.test(url) ||
-							// /muadi\.com\.vn/gi.test(url) ||
-							// /onlinebookingticket\.vn/gi.test(url) ||
-							// /onlineairticket\.vn/gi.test(url) ||
-							// /bookingticket\.vn/gi.test(url) ||
-							// /vnabooking/gi.test(url) ||
-							// /vietjetair/gi.test(url)
+						if (
+							1 ||
+							/vetot\.com\.vn/gi.test(url) ||
+							/holavietnam\.com\.vn/gi.test(url) ||
+							/muadi\.com\.vn/gi.test(url) ||
+							/onlinebookingticket\.vn/gi.test(url) ||
+							/onlineairticket\.vn/gi.test(url) ||
+							/bookingticket\.vn/gi.test(url) ||
+							/vnabooking/gi.test(url) ||
+							/vietjetair/gi.test(url)
 						) {
 							$(".content").show();
 							$("#error-page").hide();
@@ -250,5 +261,31 @@
 			);
 			$(".hanh-khach").on("click", "button", (e) => xoaHK(e));
 		});
+
+		$("#btnExcel").on("click", (e) => {
+			var data = $("#txtExcel").val();
+			var rows = data.split("\n").filter((e) => e != undefined && e != "");
+
+			var hanhkhachs = [];
+			for (var y in rows) {
+				var cells = rows[y].split("\t");
+				if (cells.length >= 3 && cells[0] != "")
+					hanhkhachs.push({
+						hoten: cells[0],
+						ngaysinh: convertDate(cells[1]),
+						gioitinh: cells[2],
+						check: true,
+					});
+			}
+			$("#txtExcel").val("");
+			renderListHanhKhach(hanhkhachs);
+		});
+
+		$("#btnExcelHelp").on("click", (e) =>
+			alert(
+				"Copy nội dung từ file excel dán vào ô bên cạnh để xử lý.\n" +
+					"Các cột trong Excel:\n1. Họ tên\n2. Ngày sinh (dạng dd/mm/yyyy hoặc yyyy-mm-dd)\n3. Giới tính: MR, MRS, MS, MSTR, MISS"
+			)
+		);
 	}); // End ready
 })();
