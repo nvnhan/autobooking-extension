@@ -124,7 +124,7 @@
 
 	const convertDate = (s) => {
 		const da = s.split("/");
-		if (da.length === 3) return da[2] + "-" + da[1] + "-" + da[0];
+		if (da.length === 3) return da[2] + "-" + (da[1] < 10 ? "0" + da[1] : da[1]) + "-" + (da[0] < 10 ? "0" + da[0] : da[0]);
 		return s;
 	};
 
@@ -272,8 +272,8 @@
 				if (cells.length >= 3 && cells[0] != "")
 					hanhkhachs.push({
 						hoten: cells[0],
-						ngaysinh: convertDate(cells[1]),
-						gioitinh: cells[2],
+						gioitinh: cells[1],
+						ngaysinh: convertDate(cells[2]),
 						check: true,
 					});
 			}
@@ -284,7 +284,7 @@
 		$("#btnExcelHelp").on("click", (e) =>
 			alert(
 				"Copy nội dung từ file excel dán vào ô bên cạnh để xử lý.\n" +
-					"Các cột trong Excel:\n1. Họ tên\n2. Ngày sinh (dạng dd/mm/yyyy hoặc yyyy-mm-dd)\n3. Giới tính: MR, MRS, MS, MSTR, MISS"
+					"Các cột trong Excel:\n1. Họ tên\n2. Giới tính: MR, MRS, MS, MSTR, MISS\n3. Ngày sinh (dạng dd/mm/yyyy hoặc yyyy-mm-dd)"
 			)
 		);
 	}); // End ready
