@@ -8,7 +8,7 @@
 // 	console.log("Chrome tabs", tabs);
 // });
 
-chrome.storage.local.set({ user: null });
+chrome.storage.local.set({ user: null, ttlh: null });
 
 const data = {};
 const defaultInitState = {

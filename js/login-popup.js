@@ -116,6 +116,9 @@
 			if (canStart(state.result.follow_state)) request = request.withStartFollowAction();
 			request = request.build();
 
+			const ttlh = { tenkhachhang: request.tenkhachhang, diachi: request.diachi, email: request.email, sdt: request.sdt };
+			chrome.storage.local.set({ ttlh });
+
 			chrome.runtime.sendMessage(request, (response) => pageState.setState(response.state));
 		});
 	};
@@ -146,7 +149,7 @@
 					getCurrentTab((tab) => {
 						const url = tab.url;
 						if (
-							// 1 ||
+							1 ||
 							/vetot\.com\.vn/gi.test(url) ||
 							/holavietnam\.com\.vn/gi.test(url) ||
 							/muadi\.com\.vn/gi.test(url) ||
@@ -159,7 +162,19 @@
 							$(".content").show();
 							$("#error-page").hide();
 							// Get state of current tab from background.js
-							chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => pageState.setState(response.state));
+							chrome.runtime.sendMessage({ action: "get-state", tab: tab }, (response) => {
+								if (!response.state.tenkhachhang) {
+									chrome.storage.local.get("ttlh", (data) => {
+										if (data.ttlh) {
+											response.state.request.tenkhachhang = data.ttlh.tenkhachhang;
+											response.state.request.diachi = data.ttlh.diachi;
+											response.state.request.sdt = data.ttlh.sdt;
+											response.state.request.email = data.ttlh.email;
+										}
+										pageState.setState(response.state);
+									});
+								} else pageState.setState(response.state);
+							});
 
 							getCurrentFollowStateInterval = setInterval(() => {
 								chrome.runtime.sendMessage({ action: "get-follow-state", tab: tab }, (response) =>
