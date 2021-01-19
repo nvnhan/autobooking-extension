@@ -1,3 +1,7 @@
+////////////////////////////////
+// FUNCTION DÙNG CHUNG Ở POPUP VÀ SCRIPT
+//////////////////////////////////
+
 class PageState {
 	constructor() {
 		this.state = null;
@@ -90,6 +94,11 @@ class RequestDecorator {
 		return this;
 	}
 
+	withFinalConfirmAction() {
+		this.request = Object.assign({}, this.request, { action: "final-confirm" });
+		return this;
+	}
+
 	withFilledAction() {
 		this.request = Object.assign({}, this.request, { action: "filled" });
 		return this;
@@ -125,22 +134,8 @@ class RequestDecorator {
 	}
 }
 
-isValidPlaneCd = (expected, actual) => {
-	// if (!expected) return true;
-	// let arr = expected.split(',');
-	// if (arr.length === 1) {
-	//     return arr[0].toUpperCase() === actual.toUpperCase();
-	// }
+const isValidPlaneCd = (expected, actual) => !expected || expected == "" || expected.split(",").indexOf(actual) != -1;
 
-	// for (let i = 0; i < arr.length; i++) {
-	//     if(arr[i].toUpperCase() === actual) {
-	//         return true;
-	//     }
-	// }
-
-	// return false;
-	return !expected || expected == "" || expected.split(",").indexOf(actual) != -1;
-};
 //thuật toán đồng bộ hóa
 // $(function(){
 // 	$("#btnTriggerFollow").click(function(){

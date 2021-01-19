@@ -17,13 +17,16 @@ const defaultInitState = {
 		time_refresh_in_seconds: 5,
 		max_cost: "500000",
 		plane_cd: "",
-		airlines: ["vn", "vj", "bl"],
+		airlines: ["vn", "bl", "vj", "bb"],
+		daypass: 1,
+		checkall: false,
 		tenkhachhang: "",
 		diachi: "",
 		sdt: "",
 		email: "",
 		hanhkhach: [],
 		booked: [],
+		acceptedFlight: null,
 	},
 	result: {
 		follow_state: "idle",
@@ -47,28 +50,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			console.log("after set", data);
 			// Send data (state) cho script.js ở tab tương ứng
 			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
-			return sendResponse({ state: data[tabId] });
+			break;
 		case "stop-follow":
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "idle" } });
 			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
-			return sendResponse({ state: data[tabId] });
+			break;
 		case "get-state":
 			sendResponse({ state: data[tabId] });
 			break;
 		case "got-result":
-			data[tabId] = Object.assign(
-				{},
-				data[tabId],
-				// {result: Object.assign({follow_state: 'running'}, request.result_search)})
-				{ result: Object.assign({ follow_state: "running" }, {}) }
-			);
-
-			sendResponse({ state: data[tabId] });
+			data[tabId] = Object.assign({}, data[tabId], { result: Object.assign({ follow_state: "running" }, {}) });
 			break;
 		case "found":
 			notifyFound(request.acceptedFlight, request.auto_booking);
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "found" } });
-			sendResponse({ state: data[tabId] });
 			break;
 		case "confirm":
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "confirm" } });
@@ -77,51 +72,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "final-confirm" } });
 			break;
 		case "try-again":
-			console.log("try-again");
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "refresh" } });
 			break;
 		case "reload":
-			console.log("reload");
 			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
-			return sendResponse({ state: data[tabId] });
 			break;
 		case "set-state":
-			console.log("set state", request);
 			data[tabId] = Object.assign({}, data[tabId], { request: request });
 			break;
 		case "filled":
-			console.log("filled bg");
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "filled" } });
-			sendResponse({ state: data[tabId] });
 			break;
 		// Tool VietJet
 		case "redirected":
-			console.log("redirected bg");
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "redirected" } });
-			sendResponse({ state: data[tabId] });
 			break;
 		case "dangerous_goods":
 			console.log("confirmed dangerous_goods bg");
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "dangerous_goods" } });
-			sendResponse({ state: data[tabId] });
 			break;
 		case "confirmed_order":
 			console.log("confirmed_order bg");
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "confirmed_order" } });
-			sendResponse({ state: data[tabId] });
 			break;
 		case "done":
 			console.log("done bg");
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "done" } });
-			sendResponse({ state: data[tabId] });
 			break;
 	}
+	sendResponse({ state: data[tabId] });
 });
 
 let notifyFound = (selectedFlight, auto_booking) => {
 	let audio = new Audio();
 	let playPromise = null;
-	audio.src = "audio/found.ogg";
+	audio.src = "./audio/found.ogg";
 	audio.loop = !auto_booking;
 
 	chrome.notifications.clear("found", () => {
@@ -129,7 +114,7 @@ let notifyFound = (selectedFlight, auto_booking) => {
 			"found",
 			{
 				type: "basic",
-				iconUrl: "plane-logo.png",
+				iconUrl: "./image/plane-logo.png",
 				title: `${selectedFlight.from} - ${selectedFlight.to} `,
 				message: `${selectedFlight.date}. CB ${selectedFlight.plane_cd}`,
 				requireInteraction: !auto_booking,

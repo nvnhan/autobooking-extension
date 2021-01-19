@@ -22,8 +22,30 @@
 
 	"content_scripts": [
 		{
-			"js": ["js/jquery.js", "js/config.js", "js/util-classes.js", "js/script.js"],
-			"matches": ["*://vetot.com.vn/*", "*://holavietnam.com.vn/*", "*://muadi.com.vn/*", "*://onlineairticket.vn/*", "*://bookingticket.vn/*", "*://onlinebookingticket.vn/*", "*://vnabooking.com.vn/*", "*://booking.vietjetair.com/*"]
+			"js": [
+				"js/jquery.js",
+				"js/config.js",
+				"js/util-classes.js",
+				"js/pages/muadi.js",
+				"js/pages/onlineAirTicket.js",
+				"js/pages/vetot.js",
+				"js/pages/vj.js",
+				"js/pages/vnabooking.js",
+				"js/pages/xuatve.js",
+				"js/script.js"
+			],
+			"matches": [
+				"*://vetot.com.vn/*",
+				"*://holavietnam.com.vn/*",
+				"*://muadi.com.vn/*",
+				"*://onlineairticket.vn/*",
+				"*://www.systemvna.com/*",
+				"*://bookingticket.vn/*",
+				"*://onlinebookingticket.vn/*",
+				"*://vnabooking.com.vn/*",
+				"*://booking.vietjetair.com/*",
+				"*://xuatve.vn/*"
+			]
 		}
 	]
 }

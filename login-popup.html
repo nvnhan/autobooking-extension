@@ -13,7 +13,7 @@
 
 	<body>
 		<div class="container-fluid">
-			<div id="form-login" style="display: none;">
+			<div id="form-login" style="display: none">
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="panel-heading">
@@ -42,10 +42,11 @@
 										required
 									/>
 								</div>
-								<div class="alert alert-danger" id="errorMsg" style="display: none;"></div>
+								<div class="alert alert-danger" id="errorMsg" style="display: none"></div>
 								<button class="btn btn-primary" id="btnLogin">Đăng nhập</button>
 							</form>
-							<div class="divH20"></div>
+						</div>
+						<div class="panel-footer">
 							<div class="alert alert-warning">Bạn cần đăng nhập để sử dụng công cụ này</div>
 						</div>
 					</div>
@@ -53,10 +54,10 @@
 			</div>
 			<!-- End login -->
 
-			<div id="welcome" style="display: none;">
+			<div id="welcome" style="display: none">
 				<div class="alert alert-success">
 					Chào <strong id="username"></strong> <small>(Ngày hết hạn <i id="ngayhethan"></i>)</small>
-					<button class="btn btn-danger btn-xs" style="float: right;" id="btnLogout">Thoát</button>
+					<button class="btn btn-danger btn-xs" style="float: right" id="btnLogout">Thoát</button>
 				</div>
 				<div class="content">
 					<div class="row">
@@ -73,18 +74,17 @@
 					<div class="row">
 						<div class="col-xs-6">
 							<div class="form-group">
-								<label for="maxCost">
-									Giá vé tối đa
-								</label>
+								<label for="maxCost"> Giá vé tối đa </label>
 								<input type="number" id="maxCost" placeholder="Giá vé tối đa" class="form-control" />
 							</div>
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<label for="placeCd" style="display: block;">Chọn hãng</label>
+								<label for="placeCd" style="display: block">Chọn hãng bay</label>
 								<label class="pr-2"><input type="checkbox" name="airType" value="vn" checked /> VN</label>
+								<label class="pr-2"><input type="checkbox" name="airType" value="bl" checked /> PA</label>
 								<label class="pr-2"><input type="checkbox" name="airType" value="vj" checked /> VJ</label>
-								<label class="pr-2"><input type="checkbox" name="airType" value="bl" checked /> BL</label>
+								<label class="pr-2"><input type="checkbox" name="airType" value="bb" checked /> BB</label>
 							</div>
 						</div>
 					</div>
@@ -106,8 +106,27 @@
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<label for="autoBooking" style="display: block;">Sau khi tìm thấy</label>
+								<label for="autoBooking" style="display: block">Sau khi tìm thấy</label>
 								<label class="pr-2"><input type="checkbox" id="autoBooking" /> Tự động đặt chỗ</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="daypass">Số ngày next</label>
+								<select id="daypass" class="form-control">
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="checkall" style="display: block">Check các ngày</label>
+								<label class="pr-2"><input type="checkbox" id="checkall" /> Toàn bộ</label>
 							</div>
 						</div>
 					</div>
@@ -171,7 +190,7 @@
 
 					<div class="row">
 						<div class="col-xs-4 them-hanh-khach form-group">
-							<button class="btn btn-success btn-sm btn-block" id="btnThemHanhKhach">Thêm hành khách</button>
+							<button class="btn btn-link btn-sm btn-block" id="btnThemHanhKhach">+ Thêm hành khách</button>
 						</div>
 						<div class="col-xs-8 them-excel form-group">
 							<div class="input-group">
@@ -188,17 +207,15 @@
 
 					<div class="row">
 						<div class="col-xs-12 form-group">
-							<button class="btn btn-primary" id="btnTriggerFollow"><strong id="btnTriggerFollowMsg"></strong></button>
+							<button class="btn btn-danger btn-block" id="btnTriggerFollow"><strong id="btnTriggerFollowMsg"></strong></button>
 						</div>
 					</div>
 
 					<div class="alert alert-info">Trạng thái: <strong id="followStateMsg"></strong></div>
 				</div>
 
-				<div id="error-page" style="display: none;">
-					<h5 style="text-align: center;">
-						Trang web không được hỗ trợ!
-					</h5>
+				<div id="error-page" style="display: none">
+					<h5 style="text-align: center">Trang web không được hỗ trợ!</h5>
 				</div>
 			</div>
 		</div>
