@@ -391,8 +391,8 @@ let muadi = () => {
 					//}
 					///////////////////////////////////////////////////////////////////
 
-					const request = new RequestDecorator(getRequestData()).withAcceptedFlight(result).withConfirmAction().build();
-					chrome.runtime.sendMessage(request, () => $("#ListBooking_btnSubmit").click());
+					const request1 = new RequestDecorator(request).withAcceptedFlight(result).withConfirmAction().build();
+					chrome.runtime.sendMessage(request1, () => $("#ListBooking_btnSubmit").click());
 				} else {
 					notifyFound(result);
 				}
@@ -404,7 +404,7 @@ let muadi = () => {
 		}
 	};
 
-	let startFollow = () => {
+	const startFollow = () => {
 		isRunning = true;
 		foundItems = [];
 		const checkedAirlines = getRequestData().airlines;
@@ -443,12 +443,14 @@ let muadi = () => {
 
 	const fill = () => {
 		const state = getRequestData();
-		console.log("start auto fill", response);
+		console.log("start auto fill", state);
 		$("#ctl10_txtCustomerName").val(state.tenkhachhang);
 		$("#ctl10_txtCustomerAddress").val(state.diachi);
 		$("#ctl10_txtCustomerPhone").val(state.sdt);
 		$("#ctl10_txtCustomerEmail").val(state.email);
 
+		// Lưu tạm các hành khách đã fill vào mảng booked
+		// Nếu đặt thành công thi mới đánh dấu bỏ check
 		let cntA = 1;
 		let cntC = 1;
 		if (state.booked.length > 0) {
@@ -494,7 +496,7 @@ let muadi = () => {
 		}
 		//////////////
 		////////// Gửi lại state
-		let request = new RequestDecorator(request).withFinalConfirmAction().build();
+		const request = new RequestDecorator(state).withFinalConfirmAction().build();
 		console.log("send state after fill muadi", request);
 		chrome.runtime.sendMessage(request, () => $("#ctl10_btnConfirm").click());
 	};
