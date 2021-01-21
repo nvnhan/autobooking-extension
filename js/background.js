@@ -103,7 +103,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	sendResponse({ state: data[tabId] });
 });
 
-let notifyFound = (selectedFlight, auto_booking) => {
+let notifyFound = (selectedFlight, auto_booking = false) => {
 	let audio = new Audio();
 	let playPromise = null;
 	audio.src = "./audio/found.ogg";

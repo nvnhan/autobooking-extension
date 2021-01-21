@@ -151,7 +151,7 @@ let muadi = () => {
 			for (let iRow = 0; iRow < rows.length; iRow++) {
 				let item = {};
 				let $row = $(rows[iRow]);
-				item.plane_cd = getPlaneCd($row);
+				item.plane_cd = "VN" + getPlaneCd($row);
 				item.airline_type = getAirlineType($row);
 				item.price_table = getPriceTable($row);
 				item.$row = $row;
@@ -236,7 +236,7 @@ let muadi = () => {
 
 		let getPlaneCd = ($row) => {
 			let $plane_cd_div = $($row.find("div.item")[1]);
-			return $plane_cd_div.text().trim();
+			return $plane_cd_div.text().replace("-", "").trim();
 		};
 
 		let parseDOM = () => {
@@ -529,7 +529,7 @@ let muadi = () => {
 					clearInterval(checkResultLoadedInterval);
 					if (isDone() && !isFail()) {
 						let flight = request.acceptedFlight;
-						notifyFound(flight);
+						notifyFound(flight, true);
 
 						// Bỏ check những hành khách đã được đặt
 						let maxInd = 0;
