@@ -34,7 +34,8 @@ const getFormData = () => {
 		time_refresh_in_seconds: $("#timeRefresh").val(),
 		auto_booking: $("#autoBooking").prop("checked"),
 		daypass: $("#daypass").val(),
-		checkall: $("#checkall").prop("checked"),
+		daychecked: 0,
+		order: $("#order").val(),
 		airlines: checkedAirlines,
 		tenkhachhang: $("#tenkhachhang").val(),
 		diachi: $("#diachi").val(),
@@ -50,27 +51,28 @@ const getFormData = () => {
  * Render lại các giá trị của form tương ứng với dữ liệu state lấy từ background
  */
 const renderFollowBar = (state) => {
-	$("input[name=typeCost]").val([state.request.cost_type]);
-	$("#maxCost").val(state.request.max_cost);
-	$("#placeCd").val(state.request.plane_cd);
-	$("#timeRefresh").val(state.request.time_refresh_in_seconds);
-	$("#autoBooking").prop("checked", state.request.auto_booking);
+	const request = state.request;
+	$("input[name=typeCost]").val([request.cost_type]);
+	$("#maxCost").val(request.max_cost);
+	$("#placeCd").val(request.plane_cd);
+	$("#timeRefresh").val(request.time_refresh_in_seconds);
+	$("#autoBooking").prop("checked", request.auto_booking);
 
-	$("#daypass").val(state.request.daypass);
-	$("#checkall").prop("checked", state.request.checkall);
+	$("#daypass").val(request.daypass);
+	$("#order").val(request.order);
 
 	$("input[type=checkbox][name=airType]").each(function () {
 		let value = $(this).val();
-		let checked = state.request.airlines.indexOf(value) >= 0;
+		let checked = request.airlines.indexOf(value) >= 0;
 		$(this).prop("checked", checked);
 	});
 
-	$("#tenkhachhang").val(state.request.tenkhachhang);
-	$("#diachi").val(state.request.diachi);
-	$("#sdt").val(state.request.sdt);
-	$("#email").val(state.request.email);
+	$("#tenkhachhang").val(request.tenkhachhang);
+	$("#diachi").val(request.diachi);
+	$("#sdt").val(request.sdt);
+	$("#email").val(request.email);
 
-	renderListHanhKhach(state.request.hanhkhach);
+	renderListHanhKhach(request.hanhkhach);
 	renderFollowStateElements(state.result.follow_state);
 };
 

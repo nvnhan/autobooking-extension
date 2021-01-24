@@ -1,4 +1,4 @@
-let muadi = () => {
+const muadi = () => {
 	let isRunning = false;
 	let foundItems = [];
 	let tryAgainAction = null;
@@ -68,15 +68,22 @@ let muadi = () => {
 	const doReload = () => isRunning && (tryAgainAction = setTimeout(tryAgain, getRequestData().time_refresh_in_seconds * 1000));
 
 	const tryAgain = () => {
-		const request = new RequestDecorator(getRequestData()).withTryAgainAction().build();
+		const request = getRequestData();
+		request.daychecked++;
+		const request1 = new RequestDecorator(request).withTryAgainAction().build();
 		// Redirect to other day
-		chrome.runtime.sendMessage(request, () => (window.location.href = window.location.href + "&go_day=" + getRequestData().daypass));
+		chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=1"));
 	};
 
 	const goToMainPage = () => {
-		const request = new RequestDecorator(getRequestData()).withStartFollowAction().build();
-		// Redirect to other day
-		chrome.runtime.sendMessage(request, () => (window.location.href = window.location.href + "&go_day=-" + getRequestData().daypass));
+		const request = getRequestData();
+		// Nếu chưa kiểm tra hết số ngày thì chạy luôn
+		if (request.daychecked < request.daypass) startFollow();
+		else {
+			const request1 = new RequestDecorator(request).withStartFollowAction().build();
+			// Còn ko thì quay về trang cũ ~ reload trang cũ
+			chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=-1"));
+		}
 	};
 
 	const getMinResult = (items, airlineTypes) => {
@@ -165,7 +172,7 @@ let muadi = () => {
 			const request = getRequestData();
 			let result = null;
 			for (let i = 0; i < items.length; i++) {
-				const item = items[i];
+				const item = request.order === "asc" ? items[i] : items[items.length - i - 1];
 				if (!item.price_table) continue;
 				// Giá mặc định là tăng dần
 				for (let j = 0; j < item.price_table.length; j++) {
@@ -259,15 +266,16 @@ let muadi = () => {
 		};
 
 		let find = (items) => {
-			let request = pageState.getState().request;
-			for (let iRow = 0; iRow < items.length; iRow++) {
-				let item = items[iRow];
+			const request = getRequestData();
+			let result = null;
+			for (let i = 0; i < items.length; i++) {
+				const item = request.order === "asc" ? items[i] : items[items.length - i - 1];
 				if (item.price_base <= 0) continue;
+				// Tìm được cb thỏa đk giá
 				if (item.price_base > 0 && item.price_base <= request.max_cost && isValidPlaneCd(request.plane_cd, item.plane_cd)) {
-					// Tìm được cb thỏa đk giá
+					// Nếu cb là bb và có chọn bb
 					if (item.plane_cd.indexOf("QH") >= 0 && bb)
-						// Nếu cb là bb và có chọn bb
-						return {
+						result = {
 							plane_cd: item.plane_cd,
 							option: {
 								price_base: item.price_base,
@@ -276,7 +284,7 @@ let muadi = () => {
 							$row: item.$row,
 						};
 					else if (item.plane_cd.indexOf("VJ") >= 0 && vj)
-						return {
+						result = {
 							plane_cd: item.plane_cd,
 							option: {
 								price_base: item.price_base,
@@ -285,26 +293,23 @@ let muadi = () => {
 							$row: item.$row,
 						};
 				}
+				if (result) break;
 			}
-
-			return null;
+			return result;
 		};
 
-		let isEmptyResult = () => {
-			return $("#airlines_depart_VJ .line_noback_highlight").length > 0 || $("#airlines_depart_VJ .line_noback").length > 0;
-		};
+		const isEmptyResult = () => $("#airlines_depart_VJ .line_noback_highlight").length > 0 || $("#airlines_depart_VJ .line_noback").length > 0;
 
-		let checkDOM = () => {
+		const checkDOM = () => {
 			let checkResultLoadedInterval = setInterval(() => {
 				if (isDOMResultLoaded() || isEmptyResult()) {
 					clearInterval(checkResultLoadedInterval);
 					if (isEmptyResult()) {
 						nextStep && nextStep();
 					} else {
-						let parsedItems = parseDOM();
-						let found = find(parsedItems);
-						if (!found) {
-						} else {
+						const parsedItems = parseDOM();
+						const found = find(parsedItems);
+						if (found) {
 							console.log("VJ & BB Found", found);
 							foundFlight(found);
 						}
@@ -403,6 +408,8 @@ let muadi = () => {
 			doReload();
 		}
 	};
+    console.log("🚀 ~ file: muadi.js ~ line 411 ~ finalStep ~ finalStep", finalStep)
+    console.log("🚀 ~ file: muadi.js ~ line 411 ~ finalStep ~ finalStep", finalStep)
 
 	const startFollow = () => {
 		isRunning = true;
@@ -442,63 +449,63 @@ let muadi = () => {
 	};
 
 	const fill = () => {
-		const state = getRequestData();
-		console.log("start auto fill", state);
-		$("#ctl10_txtCustomerName").val(state.tenkhachhang);
-		$("#ctl10_txtCustomerAddress").val(state.diachi);
-		$("#ctl10_txtCustomerPhone").val(state.sdt);
-		$("#ctl10_txtCustomerEmail").val(state.email);
+		const request = getRequestData();
+		console.log("start auto fill", request);
+		$("#ctl10_txtCustomerName").val(request.tenkhachhang);
+		$("#ctl10_txtCustomerAddress").val(request.diachi);
+		$("#ctl10_txtCustomerPhone").val(request.sdt);
+		$("#ctl10_txtCustomerEmail").val(request.email);
 
 		// Lưu tạm các hành khách đã fill vào mảng booked
 		// Nếu đặt thành công thi mới đánh dấu bỏ check
 		let cntA = 1;
 		let cntC = 1;
-		if (state.booked.length > 0) {
+		if (request.booked.length > 0) {
 			// Nếu có danh sách đánh dấu những người đc chọn (ở VN)
-			state.booked.forEach((i) => {
-				if (checkAdult(state.hanhkhach[i]) && $("#firstname_adt_" + cntA).length > 0) {
-					$("#title_adt_" + cntA).val(state.hanhkhach[i].gioitinh.toLowerCase());
-					$("#firstname_adt_" + cntA).val(state.hanhkhach[i].hoten.split(" ")[0]);
-					$("#lastname_adt_" + cntA).val(state.hanhkhach[i].hoten.split(" ").slice(1).join(" "));
+			request.booked.forEach((i) => {
+				if (checkAdult(request.hanhkhach[i]) && $("#firstname_adt_" + cntA).length > 0) {
+					$("#title_adt_" + cntA).val(request.hanhkhach[i].gioitinh.toLowerCase());
+					$("#firstname_adt_" + cntA).val(request.hanhkhach[i].hoten.split(" ")[0]);
+					$("#lastname_adt_" + cntA).val(request.hanhkhach[i].hoten.split(" ").slice(1).join(" "));
 					cntA++;
-					// state.hanhkhach[i].check = false;
-				} else if (checkChild(state.hanhkhach[i]) && $("#firstname_chd_" + cntC).length > 0) {
-					$("#title_chd_" + cntC).val(state.hanhkhach[i].gioitinh.toLowerCase());
-					$("#firstname_chd_" + cntC).val(state.hanhkhach[i].hoten.split(" ")[0]);
-					$("#lastname_chd_" + cntC).val(state.hanhkhach[i].hoten.split(" ").slice(1).join(" "));
+					// request.hanhkhach[i].check = false;
+				} else if (checkChild(request.hanhkhach[i]) && $("#firstname_chd_" + cntC).length > 0) {
+					$("#title_chd_" + cntC).val(request.hanhkhach[i].gioitinh.toLowerCase());
+					$("#firstname_chd_" + cntC).val(request.hanhkhach[i].hoten.split(" ")[0]);
+					$("#lastname_chd_" + cntC).val(request.hanhkhach[i].hoten.split(" ").slice(1).join(" "));
 					cntC++;
-					// state.hanhkhach[i].check = false;
+					// request.hanhkhach[i].check = false;
 				}
 			});
-			//  state.booked = [];
+			//  request.booked = [];
 		} else {
 			// Điền danh sách hành khách
-			state.booked = [];
-			state.hanhkhach.forEach((value, ind) => {
+			request.booked = [];
+			request.hanhkhach.forEach((value, ind) => {
 				if (value.check) {
 					if (checkAdult(value) && $("#firstname_adt_" + cntA).length > 0) {
 						$("#title_adt_" + cntA).val(value.gioitinh.toLowerCase());
 						$("#firstname_adt_" + cntA).val(value.hoten.split(" ")[0]);
 						$("#lastname_adt_" + cntA).val(value.hoten.split(" ").slice(1).join(" "));
 						cntA++;
-						state.booked.push(ind);
-						// state.hanhkhach[ind].check = false;
+						request.booked.push(ind);
+						// request.hanhkhach[ind].check = false;
 					} else if (checkChild(value) && $("#firstname_chd_" + cntC).length > 0) {
 						$("#title_chd_" + cntC).val(value.gioitinh.toLowerCase());
 						$("#firstname_chd_" + cntC).val(value.hoten.split(" ")[0]);
 						$("#lastname_chd_" + cntC).val(value.hoten.split(" ").slice(1).join(" "));
 						cntC++;
-						state.booked.push(ind);
-						// state.hanhkhach[ind].check = false;
+						request.booked.push(ind);
+						// request.hanhkhach[ind].check = false;
 					}
 				}
 			});
 		}
 		//////////////
-		////////// Gửi lại state
-		const request = new RequestDecorator(state).withFinalConfirmAction().build();
-		console.log("send state after fill muadi", request);
-		chrome.runtime.sendMessage(request, () => $("#ctl10_btnConfirm").click());
+		////////// Gửi lại request
+		const request1 = new RequestDecorator(request).withFinalConfirmAction().build();
+		console.log("send request after fill muadi", request1);
+		chrome.runtime.sendMessage(request1, () => $("#ctl10_btnConfirm").click());
 	};
 
 	const confirmBooking = () => {

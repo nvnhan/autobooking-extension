@@ -61,23 +61,24 @@
 				</div>
 				<div class="content">
 					<div class="row">
-						<div class="col-xs-12">
-							<div class="form-group">
-								<label for="typeCost">Loại giá</label>
-								<div class="form-group" id="typeCost">
-									<label class="pr-2"><input type="radio" name="typeCost" value="base" /> Giá vé gốc</label>
-									<label class="pr-2"><input type="radio" name="typeCost" value="total" /> Giá vé đã kèm thuế phí</label>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="row">
 						<div class="col-xs-6">
 							<div class="form-group">
 								<label for="maxCost"> Giá vé tối đa </label>
 								<input type="number" id="maxCost" placeholder="Giá vé tối đa" class="form-control" />
 							</div>
 						</div>
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="typeCost">Loại giá</label>
+								<div class="form-group" id="typeCost">
+									<label class="pr-2"><input type="radio" name="typeCost" value="base" /> Giá vé gốc</label>
+									<label class="pr-2"><input type="radio" name="typeCost" value="total" /> Đã kèm thuế phí</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
 						<div class="col-xs-6">
 							<div class="form-group">
 								<label for="placeCd" style="display: block">Chọn hãng bay</label>
@@ -87,9 +88,7 @@
 								<label class="pr-2"><input type="checkbox" name="airType" value="bb" checked /> BB</label>
 							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col-xs-12">
+						<div class="col-xs-6">
 							<div class="form-group">
 								<label for="placeCd">Chuyến bay</label>
 								<input type="text" class="form-control" placeholder="Để trống để tìm tất cả" id="placeCd" />
@@ -97,6 +96,31 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="row">
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="daypass">Số ngày kiểm tra</label>
+								<select id="daypass" class="form-control">
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="daypass">Thứ tự kiểm tra</label>
+								<select id="order" class="form-control">
+									<option value="asc">Từ trên xuống dưới</option>
+									<option value="desc">Từ dưới lên trên</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
 					<div class="row">
 						<div class="col-xs-6">
 							<div class="form-group">
@@ -111,26 +135,6 @@
 							</div>
 						</div>
 					</div>
-
-					<div class="row">
-						<div class="col-xs-6">
-							<div class="form-group">
-								<label for="daypass">Số ngày next</label>
-								<select id="daypass" class="form-control">
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-								</select>
-							</div>
-						</div>
-						<div class="col-xs-6">
-							<div class="form-group">
-								<label for="checkall" style="display: block">Check các ngày</label>
-								<label class="pr-2"><input type="checkbox" id="checkall" /> Toàn bộ</label>
-							</div>
-						</div>
-					</div>
-
 					<!-- NVNhan -->
 					<!-- ///////////// -->
 					<label>Thông tin liên hệ</label>
