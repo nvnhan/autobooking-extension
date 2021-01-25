@@ -65,29 +65,35 @@ const muadi = () => {
 	// Đã giữ chỗ xong
 	const isFail = () => $(".flight_header2").length > 0 && $(".flight_header2").text().indexOf("Không") >= 0;
 
-	const doReload = () => isRunning && (tryAgainAction = setTimeout(tryAgain, getRequestData().time_refresh_in_seconds * 1000));
+	const doReload = () => {
+		if (isRunning) {
+			console.log("Waiting for reloading...");
+			tryAgainAction = setTimeout(tryAgain, getRequestData().time_refresh_in_seconds * 1000);
+		}
+	};
 
 	const tryAgain = () => {
 		const request = getRequestData();
-		request.daychecked++;
+		request.daychecked += request.direction;
 		const request1 = new RequestDecorator(request).withTryAgainAction().build();
 		// Redirect to other day
-		chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=1"));
+		chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=" + request.direction));
 	};
 
 	const goToMainPage = () => {
 		const request = getRequestData();
 		// Nếu chưa kiểm tra hết số ngày thì chạy luôn
-		if (request.daychecked < request.daypass) startFollow();
+		if ((request.direction === 1 && request.daychecked < request.daypass) || (request.direction === -1 && request.daychecked > 0)) startFollow();
 		else {
+			// Đổi chiều ngày kiểm tra
+			request.direction = -request.direction;
 			const request1 = new RequestDecorator(request).withStartFollowAction().build();
 			// Còn ko thì quay về trang cũ ~ reload trang cũ
-			chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=-1"));
+			chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=" + request.direction));
 		}
 	};
 
 	const getMinResult = (items, airlineTypes) => {
-		console.log("🚀 ~ file: muadi.js ~ line 289 ~ getMinResult ~ items, airlineTypes", items, airlineTypes);
 		let ret = null;
 		let minPrice = Number.MAX_SAFE_INTEGER;
 		for (let i = 0; i < items.length; i++) {
@@ -204,7 +210,6 @@ const muadi = () => {
 		let checkDOM = () => {
 			let checkResultLoadedInterval = setInterval(() => {
 				if (isDOMResultLoaded() || isEmptyResult()) {
-					console.log("vn empty", isEmptyResult());
 					clearInterval(checkResultLoadedInterval);
 
 					if (isEmptyResult()) {
@@ -235,7 +240,7 @@ const muadi = () => {
 			nextStep && nextStep();
 			return;
 		}
-		console.log("Begin VJ & BB");
+		console.log("Start VJ & BB");
 
 		let isDOMResultLoaded = () => {
 			return $("#airlines_depart_VJ .line_item").length > 0;
@@ -408,8 +413,6 @@ const muadi = () => {
 			doReload();
 		}
 	};
-    console.log("🚀 ~ file: muadi.js ~ line 411 ~ finalStep ~ finalStep", finalStep)
-    console.log("🚀 ~ file: muadi.js ~ line 411 ~ finalStep ~ finalStep", finalStep)
 
 	const startFollow = () => {
 		isRunning = true;
@@ -524,9 +527,11 @@ const muadi = () => {
 		}
 	};
 
-	let finalConfirmBooking = () => {
-		// Sau khi điền tên và ấn nút, đc xử lý ở hàm chính phía dưới
-		// Check xem có thành công không
+	/**
+	 * Sau khi điền tên và ấn nút, đc xử lý ở hàm chính phía dưới
+	 * Check xem có thành công không
+	 */
+	const finalConfirmBooking = () => {
 		wait(10000).then(() => {
 			console.log("final confirm booking");
 
@@ -540,7 +545,7 @@ const muadi = () => {
 
 						// Bỏ check những hành khách đã được đặt
 						let maxInd = 0;
-						booked.forEach((ind) => {
+						request.booked.forEach((ind) => {
 							request.hanhkhach[ind].check = false;
 							maxInd = ind;
 						});

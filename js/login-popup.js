@@ -35,6 +35,7 @@ const getFormData = () => {
 		auto_booking: $("#autoBooking").prop("checked"),
 		daypass: $("#daypass").val(),
 		daychecked: 0,
+		direction: 1,
 		order: $("#order").val(),
 		airlines: checkedAirlines,
 		tenkhachhang: $("#tenkhachhang").val(),

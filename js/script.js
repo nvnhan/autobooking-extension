@@ -48,7 +48,7 @@ if (/vetot\.com\.vn/gi.test(url) || /holavietnam\.com\.vn/gi.test(url)) {
 	console.log("apply muadi");
 	muadi();
 } else if (/onlineairticket\.vn/gi.test(url) || /systemvna/gi.test(url) || /bookingticket\.vn/gi.test(url)) {
-	console.log("apply onlineairticket & bookingticket.vn");
+	console.log("apply onlineairticket & bookingticket.vn & systemvna");
 	onlineAirTicket();
 } else if (/vnabooking/gi.test(url)) {
 	console.log("apply http://vnabooking.com.vn");
