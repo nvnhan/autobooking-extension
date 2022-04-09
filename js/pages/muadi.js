@@ -60,7 +60,8 @@ const muadi = () => {
 
 	// Đã giữ chỗ xong
 	const isDone = () =>
-		$(".flight_header").length > 0 && ($(".flight_header").text().indexOf("xong") >= 0 || $(".flight_header").text().indexOf("công") >= 0);
+		$(".flight_header").length > 0 &&
+		($(".flight_header").text().indexOf("xong") >= 0 || $(".flight_header").text().indexOf("công") >= 0);
 
 	// Đã giữ chỗ xong
 	const isFail = () => $(".flight_header2").length > 0 && $(".flight_header2").text().indexOf("Không") >= 0;
@@ -77,19 +78,29 @@ const muadi = () => {
 		request.daychecked += request.direction;
 		const request1 = new RequestDecorator(request).withTryAgainAction().build();
 		// Redirect to other day
-		chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=" + request.direction));
+		chrome.runtime.sendMessage(
+			request1,
+			() => (window.location.href = window.location.href + "&go_day=" + request.direction)
+		);
 	};
 
 	const goToMainPage = () => {
 		const request = getRequestData();
 		// Nếu chưa kiểm tra hết số ngày thì chạy luôn
-		if ((request.direction === 1 && request.daychecked < request.daypass) || (request.direction === -1 && request.daychecked > 0)) startFollow();
+		if (
+			(request.direction === 1 && request.daychecked < request.daypass) ||
+			(request.direction === -1 && request.daychecked > 0)
+		)
+			startFollow();
 		else {
 			// Đổi chiều ngày kiểm tra
 			request.direction = -request.direction;
 			const request1 = new RequestDecorator(request).withStartFollowAction().build();
 			// Còn ko thì quay về trang cũ ~ reload trang cũ
-			chrome.runtime.sendMessage(request1, () => (window.location.href = window.location.href + "&go_day=" + request.direction));
+			chrome.runtime.sendMessage(
+				request1,
+				() => (window.location.href = window.location.href + "&go_day=" + request.direction)
+			);
 		}
 	};
 
@@ -136,7 +147,8 @@ const muadi = () => {
 		console.log("Start VN, PA");
 
 		const getPlaneCd = ($row) => $($row.find("div.item")[1]).find("a b").text();
-		const getAirlineType = ($row) => ($($row.find("div.item")[0]).find("img").attr("src").indexOf("VN") >= 0 ? "vn" : "bl");
+		const getAirlineType = ($row) =>
+			$($row.find("div.item")[0]).find("img").attr("src").indexOf("VN") >= 0 ? "vn" : "bl";
 		const getPriceTable = ($row) => {
 			const options = $row.find("select option");
 			if (!options.length) return null;
@@ -277,7 +289,11 @@ const muadi = () => {
 				const item = request.order === "asc" ? items[i] : items[items.length - i - 1];
 				if (item.price_base <= 0) continue;
 				// Tìm được cb thỏa đk giá
-				if (item.price_base > 0 && item.price_base <= request.max_cost && isValidPlaneCd(request.plane_cd, item.plane_cd)) {
+				if (
+					item.price_base > 0 &&
+					item.price_base <= request.max_cost &&
+					isValidPlaneCd(request.plane_cd, item.plane_cd)
+				) {
 					// Nếu cb là bb và có chọn bb
 					if (item.plane_cd.indexOf("QH") >= 0 && bb)
 						result = {
@@ -303,7 +319,9 @@ const muadi = () => {
 			return result;
 		};
 
-		const isEmptyResult = () => $("#airlines_depart_VJ .line_noback_highlight").length > 0 || $("#airlines_depart_VJ .line_noback").length > 0;
+		const isEmptyResult = () =>
+			$("#airlines_depart_VJ .line_noback_highlight").length > 0 ||
+			$("#airlines_depart_VJ .line_noback").length > 0;
 
 		const checkDOM = () => {
 			let checkResultLoadedInterval = setInterval(() => {
@@ -401,8 +419,11 @@ const muadi = () => {
 					//}
 					///////////////////////////////////////////////////////////////////
 
-					const request1 = new RequestDecorator(request).withAcceptedFlight(result).withConfirmAction().build();
-					chrome.runtime.sendMessage(request1, () => $("#ListBooking_btnSubmit").click());
+					const request1 = new RequestDecorator(request)
+						.withAcceptedFlight(result)
+						.withConfirmAction()
+						.build();
+					chrome.runtime.sendMessage(request1, () => $("#ChildPage_ListBooking_btnSubmit").click());
 				} else {
 					notifyFound(result);
 				}
@@ -456,8 +477,8 @@ const muadi = () => {
 		console.log("start auto fill", request);
 		$("#ctl10_txtCustomerName").val(request.tenkhachhang);
 		$("#ctl10_txtCustomerAddress").val(request.diachi);
-		$("#ctl10_txtCustomerPhone").val(request.sdt);
-		$("#ctl10_txtCustomerEmail").val(request.email);
+		$("#ChildPage_ctl10_txtCustomerPhone").val(request.sdt);
+		$("#ChildPage_ctl10_txtCustomerEmail").val(request.email);
 
 		// Lưu tạm các hành khách đã fill vào mảng booked
 		// Nếu đặt thành công thi mới đánh dấu bỏ check
@@ -508,13 +529,13 @@ const muadi = () => {
 		////////// Gửi lại request
 		const request1 = new RequestDecorator(request).withFinalConfirmAction().build();
 		console.log("send request after fill muadi", request1);
-		chrome.runtime.sendMessage(request1, () => $("#ctl10_btnConfirm").click());
+		chrome.runtime.sendMessage(request1, () => $("#ChildPage_ctl10_btnConfirm").click());
 	};
 
 	const confirmBooking = () => {
 		// State = Final: Fill in main method
 		// else:
-		if ($("#ctl10_btnConfirm").length > 0) {
+		if ($("#ChildPage_ctl10_btnConfirm").length > 0) {
 			setTimeout(fill, 500);
 		} else {
 			let isFail = $("#ChildPage_ListBooking_divShowError").length > 0;
