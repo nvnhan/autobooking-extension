@@ -2,7 +2,8 @@ const pageStatePopup = new PageState();
 pageStatePopup.onStateChange((state) => renderFollowBar(state));
 pageStatePopup.onFollowStateChange((followState) => renderFollowStateElements(followState));
 
-const getCurrentTab = (callback) => chrome.tabs.query({ active: true, windowId: chrome.windows.WINDOW_ID_CURRENT }, (tabs) => callback(tabs[0]));
+const getCurrentTab = (callback) =>
+	chrome.tabs.query({ active: true, windowId: chrome.windows.WINDOW_ID_CURRENT }, (tabs) => callback(tabs[0]));
 const canStart = (followState) => followState == "idle" || followState == "found";
 
 let getCurrentFollowStateInterval = null;
@@ -33,7 +34,7 @@ const getFormData = () => {
 		plane_cd: $("#placeCd").val(),
 		time_refresh_in_seconds: $("#timeRefresh").val(),
 		auto_booking: $("#autoBooking").prop("checked"),
-		daypass: $("#daypass").val(),
+		daypass: parseInt($("#daypass").val()),
 		daychecked: 0,
 		direction: 1,
 		order: $("#order").val(),
@@ -126,7 +127,12 @@ const triggerFollow = (state) => {
 		request = request.build();
 
 		// Lưu thông tin khách hàng
-		const ttlh = { tenkhachhang: request.tenkhachhang, diachi: request.diachi, email: request.email, sdt: request.sdt };
+		const ttlh = {
+			tenkhachhang: request.tenkhachhang,
+			diachi: request.diachi,
+			email: request.email,
+			sdt: request.sdt,
+		};
 		chrome.storage.local.set({ ttlh });
 
 		chrome.runtime.sendMessage(request, (response) => pageStatePopup.setState(response.state));
@@ -137,7 +143,8 @@ const xoaHK = (e) => e.target.closest(".row").remove();
 
 const convertDate = (s) => {
 	const da = s.split("/");
-	if (da.length === 3) return da[2] + "-" + (da[1] < 10 ? "0" + da[1] : da[1]) + "-" + (da[0] < 10 ? "0" + da[0] : da[0]);
+	if (da.length === 3)
+		return da[2] + "-" + (da[1] < 10 ? "0" + da[1] : da[1]) + "-" + (da[0] < 10 ? "0" + da[0] : da[0]);
 	return s;
 };
 

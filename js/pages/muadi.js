@@ -31,7 +31,7 @@ const muadi = () => {
 				break;
 			case "refresh":
 				// Go back to page after send 'try-again' action
-				goToMainPage();
+				startFollow();
 			default:
 		}
 	});
@@ -73,30 +73,23 @@ const muadi = () => {
 		}
 	};
 
+	/**
+	 * If not find the result
+	 * Then do try Again on this page or on other page
+	 */
 	const tryAgain = () => {
 		const request = getRequestData();
 		request.daychecked += request.direction;
-		const request1 = new RequestDecorator(request).withTryAgainAction().build();
-		// Redirect to other day
-		chrome.runtime.sendMessage(
-			request1,
-			() => (window.location.href = window.location.href + "&go_day=" + request.direction)
-		);
-	};
-
-	const goToMainPage = () => {
-		const request = getRequestData();
-		// Nếu chưa kiểm tra hết số ngày thì chạy luôn
-		if (
-			(request.direction === 1 && request.daychecked < request.daypass) ||
-			(request.direction === -1 && request.daychecked > 0)
-		)
-			startFollow();
-		else {
-			// Đổi chiều ngày kiểm tra
+		// Reverse request direction
+		if (request.daychecked === request.daypass || request.daychecked * request.direction === -1)
 			request.direction = -request.direction;
-			const request1 = new RequestDecorator(request).withStartFollowAction().build();
-			// Còn ko thì quay về trang cũ ~ reload trang cũ
+		const request1 = new RequestDecorator(request).withTryAgainAction().build();
+
+		if (request.daypass === 1)
+			// Do reload current page
+			chrome.runtime.sendMessage(request1, () => window.location.reload());
+		else {
+			// Redirect to other day
 			chrome.runtime.sendMessage(
 				request1,
 				() => (window.location.href = window.location.href + "&go_day=" + request.direction)
@@ -121,8 +114,8 @@ const muadi = () => {
 	 * select combobox adult by number of tickets
 	 * @param numberTickets > 0
 	 */
-	let selectAdult = function (numberTickets) {
-		let id = "#ListBooking_ddlADT option:eq(" + numberTickets + ")";
+	const selectAdult = function (numberTickets) {
+		let id = "#ChildPage_ListBooking_ddlADT option:eq(" + numberTickets + ")";
 		console.log("selectAdult -> id", id);
 		$(id).prop("selected", true);
 	};
@@ -131,8 +124,8 @@ const muadi = () => {
 	 * select combobox children by number of tickets
 	 * @param numberTickets >= 0
 	 */
-	let selectChildren = function (numberTickets) {
-		let id = "#ListBooking_ddlCHD option:eq(" + numberTickets + ")";
+	const selectChildren = function (numberTickets) {
+		let id = "#ChildPage_ListBooking_ddlCHD option:eq(" + numberTickets + ")";
 		console.log("selectChildren -> id", id);
 		$(id).prop("selected", true);
 	};
