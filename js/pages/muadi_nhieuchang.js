@@ -1,4 +1,4 @@
-const muadi = () => {
+const muadi_nhieuchang = () => {
 	let isRunning = false;
 	let foundItems = [];
 	let tryAgainAction = null;

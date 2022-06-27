@@ -28,6 +28,7 @@ const defaultInitState = {
 		hanhkhach: [],
 		booked: [],
 		acceptedFlight: null,
+		nhieuChang: false,
 	},
 	result: {
 		follow_state: "idle",
@@ -47,7 +48,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "get-follow-state":
 			return sendResponse({ follow_state: data[tabId].result.follow_state });
 		case "start-follow":
-			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "waiting_result" } });
+			data[tabId] = Object.assign(
+				{},
+				data[tabId],
+				{ request: request },
+				{ result: { follow_state: "waiting_result" } }
+			);
 			console.log("after set", data);
 			// Send data (state) cho script.js ở tab tương ứng
 			chrome.tabs.sendMessage(tabId, { state: data[tabId] }, () => {});
@@ -70,7 +76,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "confirm" } });
 			break;
 		case "final-confirm":
-			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "final-confirm" } });
+			data[tabId] = Object.assign(
+				{},
+				data[tabId],
+				{ request: request },
+				{ result: { follow_state: "final-confirm" } }
+			);
 			break;
 		case "try-again":
 			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "refresh" } });
@@ -86,15 +97,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			break;
 		// Tool VietJet
 		case "redirected":
-			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "redirected" } });
+			data[tabId] = Object.assign(
+				{},
+				data[tabId],
+				{ request: request },
+				{ result: { follow_state: "redirected" } }
+			);
 			break;
 		case "dangerous_goods":
 			console.log("confirmed dangerous_goods bg");
-			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "dangerous_goods" } });
+			data[tabId] = Object.assign(
+				{},
+				data[tabId],
+				{ request: request },
+				{ result: { follow_state: "dangerous_goods" } }
+			);
 			break;
 		case "confirmed_order":
 			console.log("confirmed_order bg");
-			data[tabId] = Object.assign({}, data[tabId], { request: request }, { result: { follow_state: "confirmed_order" } });
+			data[tabId] = Object.assign(
+				{},
+				data[tabId],
+				{ request: request },
+				{ result: { follow_state: "confirmed_order" } }
+			);
 			break;
 		case "done":
 			console.log("done bg");
