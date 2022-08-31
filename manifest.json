@@ -27,6 +27,7 @@
 				"js/config.js",
 				"js/util-classes.js",
 				"js/pages/muadi.js",
+				"js/pages/muadi_nhieuchang.js",
 				"js/pages/onlineAirTicket.js",
 				"js/pages/vetot.js",
 				"js/pages/vj.js",
