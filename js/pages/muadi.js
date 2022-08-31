@@ -446,7 +446,7 @@ const muadi = () => {
 		foundItems = [];
 		const checkedAirlines = getRequestData().airlines;
 
-		if (isOnlyVietnamAirline()) {
+		if (isOnlyVietnamAirline() || (checkedAirlines.indexOf("vj") < 0 && checkedAirlines.indexOf("bb") < 0)) {
 			vietnamAirline(
 				checkedAirlines.indexOf("vn") >= 0,
 				checkedAirlines.indexOf("bl") >= 0,
