@@ -80,7 +80,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				{},
 				data[tabId],
 				{ request: request },
-				{ result: { follow_state: "final-confirm" } }
+				{ result: { follow_state: "final_confirm" } }
 			);
 			break;
 		case "try-again":
