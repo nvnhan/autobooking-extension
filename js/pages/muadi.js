@@ -483,8 +483,8 @@ const muadi = () => {
 		console.log("start auto fill", request);
 		$("#ctl10_txtCustomerName").val(request.tenkhachhang);
 		$("#ctl10_txtCustomerAddress").val(request.diachi);
-		$("#ChildPage_ctl10_txtCustomerPhone").val(request.sdt);
-		$("#ChildPage_ctl10_txtCustomerEmail").val(request.email);
+		$("#ChildPage_ctl12_txtCustomerEmail").val(request.sdt);
+		$("#ChildPage_ctl12_txtCustomerPhone").val(request.email);
 
 		// Lưu tạm các hành khách đã fill vào mảng booked
 		// Nếu đặt thành công thi mới đánh dấu bỏ check
