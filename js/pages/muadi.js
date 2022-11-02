@@ -26,7 +26,7 @@ const muadi = () => {
 			case "confirm":
 				confirmBooking();
 				break;
-			case "final-confirm":
+			case "final_confirm":
 				finalConfirmBooking();
 				break;
 			case "refresh":
@@ -367,10 +367,10 @@ const muadi = () => {
 		if (foundItems.length > 0) {
 			let result = getMinResult(foundItems, checkedAirlines);
 			if (result) {
-				let divSelect = result.$row.find("div.item")[6];
+				let divSelect = result.$row.find("input[type=radio]")[0];
 				if (divSelect)
 					// Click chọn hàng này
-					$(divSelect).find("input")[0].click();
+					$(divSelect).click();
 
 				if (request.auto_booking) {
 					////////////////////////////////////
@@ -535,13 +535,13 @@ const muadi = () => {
 		////////// Gửi lại request
 		const request1 = new RequestDecorator(request).withFinalConfirmAction().build();
 		console.log("send request after fill muadi", request1);
-		chrome.runtime.sendMessage(request1, () => $("#ChildPage_ctl10_btnConfirm").click());
+		chrome.runtime.sendMessage(request1, () => $("#XacNhanThongTin")[0].click());
 	};
 
 	const confirmBooking = () => {
 		// State = Final: Fill in main method
 		// else:
-		if ($("#ChildPage_ctl10_btnConfirm").length > 0) {
+		if ($("#XacNhanThongTin").length > 0) {
 			setTimeout(fill, 500);
 		} else {
 			let isFail = $("#ChildPage_ListBooking_divShowError").length > 0;
