@@ -86,7 +86,8 @@ const muadi = () => {
 		// Redirect to other day
 		chrome.runtime.sendMessage(
 			request1,
-			() => (window.location.href = window.location.href + "&go_day=" + request.direction)
+			() => window.location.reload()
+			// () => (window.location.href = window.location.href + "&go_day=" + request.direction)
 		);
 	};
 
@@ -105,7 +106,8 @@ const muadi = () => {
 			// Còn ko thì quay về trang cũ ~ reload trang cũ
 			chrome.runtime.sendMessage(
 				request1,
-				() => (window.location.href = window.location.href + "&go_day=" + request.direction)
+				() => window.location.reload()
+				// () => (window.location.href = window.location.href + "&go_day=" + request.direction)
 			);
 		}
 	};
@@ -185,6 +187,7 @@ const muadi = () => {
 				item.plane_cd = "VN" + getPlaneCd($row);
 				item.airline_type = getAirlineType($row);
 				item.price_table = getPriceTable($row);
+				if (!item.price_table) continue;
 				item.$row = $row;
 				if ((vn && item.airline_type === "vn") || (bl && item.airline_type === "bl")) items.push(item);
 			}
@@ -235,8 +238,7 @@ const muadi = () => {
 					} else {
 						let parsedItems = parseDOM();
 						let found = find(parsedItems);
-						if (!found) {
-						} else {
+						if (found) {
 							console.log("VN Found", found);
 							foundFlight(found);
 						}
@@ -326,8 +328,7 @@ const muadi = () => {
 		};
 
 		const isEmptyResult = () =>
-			$("#airlines_depart_VJ .line_noback_highlight").length > 0 ||
-			$("#airlines_depart_VJ .line_noback").length > 0;
+			$("#airlines_depart_VJ .line_noback_highlight").length > 0 || $("#airlines_depart_VJ .line_noback").length > 0;
 
 		const checkDOM = () => {
 			let checkResultLoadedInterval = setInterval(() => {
@@ -425,10 +426,7 @@ const muadi = () => {
 					//}
 					///////////////////////////////////////////////////////////////////
 
-					const request1 = new RequestDecorator(request)
-						.withAcceptedFlight(result)
-						.withConfirmAction()
-						.build();
+					const request1 = new RequestDecorator(request).withAcceptedFlight(result).withConfirmAction().build();
 					chrome.runtime.sendMessage(request1, () => $("#ChildPage_ListBooking_btnSubmit").click());
 				} else {
 					notifyFound(result);
